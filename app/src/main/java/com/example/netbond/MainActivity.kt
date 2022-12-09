@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
         val bondCreationFragment = BondCreationFragment()
 
         supportFragmentManager.beginTransaction().apply {
-            replace(R.id.flFragment, bondCreationFragment)
+            replace(R.id.flFragment, externalUserProfileFragment)
             commit()
         }
     }
