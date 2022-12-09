@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "637205866042",
+    "project_id": "netbond-app",
+    "storage_bucket": "netbond-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:637205866042:android:7951c236c4117c7f427703",
+        "android_client_info": {
+          "package_name": "com.example.netbond"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "637205866042-3c79t98gp2488k04fmr4l6v3mm8dtd61.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwl2KCFvhb9k5qr-kV83nwUDp1EqcAHtg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "637205866042-3c79t98gp2488k04fmr4l6v3mm8dtd61.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
