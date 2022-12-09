@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import com.bumptech.glide.Glide
 import com.example.netbond.controllers.FollowController
 import com.example.netbond.models.User
 import com.example.netbond.services.StorageService
@@ -58,6 +59,7 @@ class ExternalUserProfileFragment : Fragment(R.layout.activity_external_user_pro
         // Picasso.get().load(user.profile_image).into(imgProfile)
         CoroutineScope(Dispatchers.Main).launch{
             var extUser: User? = db.getUser(externalUsername)
+            Glide.with(requireView()).load(extUser!!.profile_image).into(imgProfile!!)
             txtName!!.text = extUser!!.name
             txtUsername!!.text = extUser!!.username
             txtnumFollowings!!.text = extUser!!.n_followings.toString()
