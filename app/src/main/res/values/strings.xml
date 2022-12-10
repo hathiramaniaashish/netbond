@@ -27,4 +27,6 @@
     <string name="menu_search">Search</string>
     <string name="menu_home">Home</string>
     <string name="menu_profile">Profile</string>
+
+    <string name="pending_requests">Pending Requests</string>
 </resources>

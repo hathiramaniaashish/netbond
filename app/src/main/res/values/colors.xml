@@ -7,4 +7,5 @@
     <color name="logo">#ECC083</color>
     <color name="hint">#808080</color>
     <color name="red">#FF0000</color>
+    <color name="gray">#AAAAAA</color>
 </resources>
