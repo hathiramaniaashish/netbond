@@ -15,7 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
 
-class AccountSettingFragment : Fragment(R.layout.activity_account_settings) {
+class AccountSettingFragment : Fragment(R.layout.fragment_account_settings) {
 
     private val db = StorageService()
     private val PICK_IMAGE_REQUEST = 71

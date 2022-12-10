@@ -1,22 +1,18 @@
 package com.example.netbond
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
-import com.example.netbond.R
 import com.example.netbond.services.StorageService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class UserProfileFragment : Fragment(R.layout.activity_user_profile) {
+class UserProfileFragment : Fragment(R.layout.fragment_user_profile) {
 
     val db = StorageService()
 

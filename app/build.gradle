@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace 'com.example.netbond'
-    compileSdk 32
+    compileSdk 33
 
     defaultConfig {
         applicationId "com.example.netbond"
@@ -52,6 +52,9 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+
+    //FRAGMENTOS
+    implementation "androidx.fragment:fragment-ktx:1.5.4"
 
     // FIREBASE
     implementation platform('com.google.firebase:firebase-bom:31.1.0')

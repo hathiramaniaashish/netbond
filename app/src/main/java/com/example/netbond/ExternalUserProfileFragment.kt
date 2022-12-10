@@ -1,11 +1,8 @@
 package com.example.netbond
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -17,7 +14,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class ExternalUserProfileFragment : Fragment(R.layout.activity_external_user_profile) {
+class ExternalUserProfileFragment : Fragment(R.layout.fragment_external_user_profile) {
 
     private val db = StorageService()
     private val followController = FollowController()

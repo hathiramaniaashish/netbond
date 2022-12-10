@@ -1,5 +1,30 @@
 <resources>
     <string name="app_name">netbond</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="start_creating_bonds">START CREATING BONDS</string>
+    <string name="name_hint">Name</string>
+    <string name="email_hint">Email</string>
+    <string name="username_hint">Username</string>
+    <string name="password_hint">Password</string>
+    <string name="sign_up_button">Sign Up</string>
+    <string name="sign_up_message1">Already using Netbond?</string>
+    <string name="sign_up_message2"> <u>Log In.</u></string>
+
+    <string name="welcome_to_your">WELCOME TO YOUR</string>
+    <string name="bonds">BONDS</string>
+    <string name="login_button">Log In</string>
+    <string name="login_message1">New to Netbond?</string>
+    <string name="login_message2"> <u>Sign Up.</u></string>
+    <string name="search_users">Search for Users</string>
+
+    <string name="name">John Doe</string>
+    <string name="points">456</string>
+    <string name="username">\@\johndoe</string>
+
+    <string name="question">What\'s my favourite movie?</string>
+    <string name="wrong">Wrong answer</string>
+    <string name="right">Right answer</string>
+
+    <string name="menu_search">Search</string>
+    <string name="menu_home">Home</string>
+    <string name="menu_profile">Profile</string>
 </resources>

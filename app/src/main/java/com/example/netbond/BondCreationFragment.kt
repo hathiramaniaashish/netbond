@@ -9,11 +9,8 @@ import android.widget.Button
 import android.widget.ListView
 import android.widget.TextView
 import com.example.netbond.controllers.BondController
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
-class BondCreationFragment : Fragment(R.layout.activity_bond_creation) {
+class BondCreationFragment : Fragment(R.layout.fragment_bond_creation) {
 
     private val bondController = BondController()
     private val currentUsername = "johndoe"// getExternalUsername()
