@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.netbond.databinding.AcceptUserTemplateBinding
 import com.example.netbond.databinding.FragmentUserSearchBarBinding
 import com.example.netbond.databinding.SearchUserTemplateBinding
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 
 
@@ -28,7 +29,7 @@ class UserSearchBarFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentUserSearchBarBinding.inflate(inflater, container, false)
         setSearchBarListener()
-        setReceivedRequests(actualUsername)
+        setReceivedRequests()
         return binding.root
     }
 
@@ -49,7 +50,7 @@ class UserSearchBarFragment : Fragment() {
                     setSearchUsers(s)
                 } else {
                     binding.pendingRequests.visibility = View.VISIBLE
-                    setReceivedRequests(actualUsername)
+                    setReceivedRequests()
                 }
             }
         })
@@ -75,8 +76,8 @@ class UserSearchBarFragment : Fragment() {
         }
     }
 
-    private fun setReceivedRequests(username: String) {
-        usersRef.whereEqualTo("username", username).get().addOnSuccessListener {
+    private fun setReceivedRequests() {
+        usersRef.whereEqualTo("username", actualUsername).get().addOnSuccessListener {
             val actualUserDoc = it.single()
             usersRef
                 .document(actualUserDoc.id)
@@ -87,10 +88,42 @@ class UserSearchBarFragment : Fragment() {
                             val userDoc = it.single()
                             val bind = AcceptUserTemplateBinding.inflate(layoutInflater, binding.usersList, true)
                             bind.nameUser.text = userDoc.get("name").toString()
-                            val username = "@" + userDoc.get("username").toString()
-                            bind.userName.text = username
+                            val username = userDoc.get("username").toString()
+                            val usernameAt = "@$username"
+                            bind.userName.text = usernameAt
                             bind.userPoints.text = userDoc.get("n_points").toString()
+                            bind.acceptButton.setOnClickListener { acceptUser(username) }
                         }
+                    }
+                }
+        }
+    }
+
+    private fun acceptUser(username: String) {
+        usersRef.whereEqualTo("username", actualUsername).get().addOnSuccessListener {
+            val actualUserDoc = it.single()
+            val actualUserRef = usersRef.document(actualUserDoc.id)
+            actualUserRef.collection("receivedRequests")
+                .document(username)
+                .delete().addOnSuccessListener {
+                    actualUserRef.collection("followers")
+                        .document(username)
+                        .set(emptyMap<String, String>())
+                    actualUserRef.update("n_followers", FieldValue.increment(1))
+                    usersRef.whereEqualTo("username", username).get().addOnSuccessListener {
+                        val userDoc = it.single()
+                        val userRef = usersRef.document(userDoc.id)
+                        userRef.collection("sentRequests")
+                            .document(actualUsername)
+                            .delete().addOnSuccessListener {
+                                userRef.collection("followings")
+                                    .document(actualUsername)
+                                    .set(emptyMap<String, String>())
+                                userRef.update("n_followings", FieldValue.increment(1))
+                                // Refresh received requests
+                                binding.usersList.removeAllViews()
+                                setReceivedRequests()
+                            }
                     }
                 }
         }
