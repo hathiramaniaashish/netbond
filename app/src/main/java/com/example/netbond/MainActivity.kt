@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.inputmethod.InputMethodManager
+import androidx.navigation.findNavController
 import com.example.netbond.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
