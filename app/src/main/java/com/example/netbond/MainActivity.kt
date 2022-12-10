@@ -13,19 +13,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        val userProfileFragment = UserProfileFragment()
-        val accountSettingFragment = AccountSettingFragment()
-        val externalUserProfileFragment = ExternalUserProfileFragment()
-        val bondCreationFragment = BondCreationFragment()
-
-        supportFragmentManager.beginTransaction().apply {
-            replace(R.id.nav_host_fragment, externalUserProfileFragment)
-            commit()
-        }
-
         window.statusBarColor = getColor(R.color.background)
         binding = ActivityMainBinding.inflate(layoutInflater)
         //binding.toolBar.visibility = View.GONE
@@ -53,6 +40,7 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.profile -> {
+                    findNavController(R.id.nav_host_fragment).navigate(R.id.userProfileFragment)
                     true
                 }
                 else -> {false}

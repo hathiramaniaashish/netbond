@@ -29,7 +29,11 @@
         android:id="@+id/userSearchBarFragment"
         android:name="com.example.netbond.UserSearchBarFragment"
         android:label="UserSearchBarFragment"
-        tools:layout="@layout/fragment_user_search_bar" />
+        tools:layout="@layout/fragment_user_search_bar" >
+        <action
+            android:id="@+id/action_userSearchBarFragment_to_externalUserProfileFragment"
+            app:destination="@id/externalUserProfileFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/feedFragment"

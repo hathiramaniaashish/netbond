@@ -86,12 +86,12 @@ class AccountSettingFragment : Fragment(R.layout.fragment_account_settings) {
         val btnSaveSettings = requireView().findViewById<Button>(R.id.btn_save_settings)
         CoroutineScope(Dispatchers.Main).launch{
             var user = db.getUser(thisUsername)
-                if (user != null) {
-                    user.name = editName?.text.toString()
-                    user.username = editUsername?.text.toString()
-                    user.email = editEmail?.text.toString()
-                }
-                db.updateUser(user)
+            if (user != null) {
+                user.name = editName?.text.toString()
+                user.username = editUsername?.text.toString()
+                user.email = editEmail?.text.toString()
+            }
+            db.updateUser(user)
         }
 
     }
