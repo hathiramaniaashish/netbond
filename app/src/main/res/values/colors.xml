@@ -8,4 +8,9 @@
     <color name="hint">#808080</color>
     <color name="red">#FF0000</color>
     <color name="gray">#AAAAAA</color>
+
+    <color name="textInfo">#FFAAAAAA</color>
+    <color name="mtrl_textinput_default_box_stroke_color">#FFAAAAAA</color>
+    <color name="secondary">#FFECC083</color>
+    <color name="warning">#FFFF6347</color>
 </resources>
