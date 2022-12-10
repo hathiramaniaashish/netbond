@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.netbond.services.StorageService
 import kotlinx.coroutines.CoroutineScope
@@ -37,9 +38,7 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile) {
         val buttonClick = view.findViewById<Button>(R.id.btn_account_settings)
         buttonClick.setOnClickListener {
             // Action
-//            findNavController().navigate(R.id.action_id_user_profile_to_settings)
-//            val intent = Intent(this, AccountSettingActivity::class.java)
-//            startActivity(intent)
+            findNavController().navigate(R.id.accountSettingFragment)
         }
     }
 
