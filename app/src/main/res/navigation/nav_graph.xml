@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/loginFragment">
+    app:startDestination="@id/userSearchBarFragment">
 
     <fragment
         android:id="@+id/loginFragment"
@@ -40,10 +40,13 @@
         android:name="com.example.netbond.FeedFragment"
         android:label="FeedFragment"
         tools:layout="@layout/fragment_feed" />
+
     <fragment
         android:id="@+id/externalUserProfileFragment"
         android:name="com.example.netbond.ExternalUserProfileFragment"
-        android:label="ExternalUserProfileFragment" />
+        android:label="ExternalUserProfileFragment"
+        tools:layout="@layout/fragment_external_user_profile" />
+
     <fragment
         android:id="@+id/accountSettingFragment"
         android:name="com.example.netbond.AccountSettingFragment"
@@ -53,11 +56,13 @@
             android:id="@+id/action_accountSettingFragment_to_userProfileFragment"
             app:destination="@id/userProfileFragment" />
     </fragment>
+
     <fragment
         android:id="@+id/bondCreationFragment"
         android:name="com.example.netbond.BondCreationFragment"
         android:label="fragment_bond_creation"
         tools:layout="@layout/fragment_bond_creation" />
+
     <fragment
         android:id="@+id/userProfileFragment"
         android:name="com.example.netbond.UserProfileFragment"
@@ -67,4 +72,5 @@
             android:id="@+id/action_userProfileFragment_to_accountSettingFragment"
             app:destination="@id/accountSettingFragment" />
     </fragment>
+
 </navigation>
