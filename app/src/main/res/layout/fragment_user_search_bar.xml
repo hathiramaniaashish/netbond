@@ -39,8 +39,7 @@
         android:fontFamily="@font/roboto"
         android:text="@string/pending_requests"
         android:textColor="@color/logo"
-        android:textSize="17sp"
-        android:visibility="visible" />
+        android:textSize="17sp" />
 
     <ScrollView
         android:layout_width="match_parent"

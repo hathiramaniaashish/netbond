@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import com.example.netbond.databinding.AcceptUserTemplateBinding
 import com.example.netbond.databinding.FragmentUserSearchBarBinding
 import com.example.netbond.databinding.SearchUserTemplateBinding
@@ -29,7 +30,9 @@ class UserSearchBarFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentUserSearchBarBinding.inflate(inflater, container, false)
         setSearchBarListener()
-        setReceivedRequests()
+        if (binding.searchBar.text.isEmpty()) {
+            setReceivedRequests()
+        }
         return binding.root
     }
 
@@ -66,6 +69,8 @@ class UserSearchBarFragment : Fragment() {
                     bind.userPoints.text = user.get("n_points").toString()
                     val username = "@" + user.get("username").toString()
                     bind.userName.text = username
+                    val profileURL = user.get("profile_image").toString()
+                    Glide.with(this).load(profileURL).into(bind.userImage)
                     // bind.user.tag = username
                     bind.root.setOnClickListener { view ->
                         view.setBackgroundColor(resources.getColor(R.color.gray, null))
@@ -85,12 +90,14 @@ class UserSearchBarFragment : Fragment() {
                 .get().addOnSuccessListener { requests ->
                     requests.forEach { request ->
                         usersRef.whereEqualTo("username", request.id).get().addOnSuccessListener {
-                            val userDoc = it.single()
+                            val userDoc = it.single()   // Problem if there is a random document
                             val bind = AcceptUserTemplateBinding.inflate(layoutInflater, binding.usersList, true)
                             bind.nameUser.text = userDoc.get("name").toString()
                             val username = userDoc.get("username").toString()
                             val usernameAt = "@$username"
                             bind.userName.text = usernameAt
+                            val profileURL = userDoc.get("profile_image").toString()
+                            Glide.with(this).load(profileURL).into(bind.userImage)
                             bind.userPoints.text = userDoc.get("n_points").toString()
                             bind.acceptButton.setOnClickListener { acceptUser(username) }
                         }
@@ -105,7 +112,7 @@ class UserSearchBarFragment : Fragment() {
             val actualUserRef = usersRef.document(actualUserDoc.id)
             actualUserRef.collection("receivedRequests")
                 .document(username)
-                .delete().addOnSuccessListener {
+                .delete().addOnSuccessListener {    // Problem if deleting last document available
                     actualUserRef.collection("followers")
                         .document(username)
                         .set(emptyMap<String, String>())
@@ -115,7 +122,7 @@ class UserSearchBarFragment : Fragment() {
                         val userRef = usersRef.document(userDoc.id)
                         userRef.collection("sentRequests")
                             .document(actualUsername)
-                            .delete().addOnSuccessListener {
+                            .delete().addOnSuccessListener {    // Problem if deleting last document available
                                 userRef.collection("followings")
                                     .document(actualUsername)
                                     .set(emptyMap<String, String>())
