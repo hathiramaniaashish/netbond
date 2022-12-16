@@ -14,7 +14,7 @@ import com.google.firebase.auth.FirebaseAuth
 class LoginFragment : Fragment() {
 
     private lateinit var binding: FragmentLoginBinding
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val auth = FirebaseAuth.getInstance()
     private val utils = Utils()
 
     override fun onCreateView(
@@ -35,12 +35,17 @@ class LoginFragment : Fragment() {
     private fun logIn() {
         val email = binding.email.text.toString()
         val password = binding.password.text.toString()
-        auth.signInWithEmailAndPassword(email, password).addOnCompleteListener {
-            if (it.isSuccessful) {
-                findNavController().navigate(R.id.feedFragment)
-            } else {
-                utils.displayMessage(binding.root, "Authentication failed")
+
+        if (email.isNotEmpty() && password.isNotEmpty()) {
+            auth.signInWithEmailAndPassword(email, password).addOnCompleteListener {
+                if (it.isSuccessful) {
+                    findNavController().navigate(R.id.feedFragment)
+                } else {
+                    utils.displayMessage(requireContext(), "Authentication failed")
+                }
             }
+        } else {
+            utils.displayMessage(requireContext(), "All fields must be filled")
         }
     }
 

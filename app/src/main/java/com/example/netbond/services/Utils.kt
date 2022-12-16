@@ -1,13 +1,13 @@
 package com.example.netbond.services
 
-import android.view.View
-import com.google.android.material.snackbar.Snackbar
+import android.content.Context
+import android.widget.Toast
 
 class Utils {
 
-    fun displayMessage(view: View, message: String) {
-        var snackbar = Snackbar.make(view, message, Snackbar.LENGTH_LONG)
-        snackbar.show()
+    fun displayMessage(context: Context, message: String) {
+        val toast = Toast.makeText(context, message, Toast.LENGTH_LONG)
+        toast.show()
     }
 
 }

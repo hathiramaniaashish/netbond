@@ -2,7 +2,6 @@ package com.example.netbond
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.navigation.findNavController
 import com.example.netbond.databinding.ActivityMainBinding

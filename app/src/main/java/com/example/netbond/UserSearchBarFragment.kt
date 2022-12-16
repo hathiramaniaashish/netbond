@@ -12,15 +12,18 @@ import com.bumptech.glide.Glide
 import com.example.netbond.databinding.AcceptUserTemplateBinding
 import com.example.netbond.databinding.FragmentUserSearchBarBinding
 import com.example.netbond.databinding.SearchUserTemplateBinding
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.FirebaseFirestore
+import com.example.netbond.services.StorageService
+import com.example.netbond.services.Utils
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class UserSearchBarFragment : Fragment() {
 
     private lateinit var binding: FragmentUserSearchBarBinding
-    private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
-    private var usersRef = db.collection("users")
+    private val storageService = StorageService()
+    private val utils = Utils()
     private var actualUsername = "johndoe"
 
     override fun onCreateView(
@@ -29,9 +32,11 @@ class UserSearchBarFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentUserSearchBarBinding.inflate(inflater, container, false)
-        setSearchBarListener()
-        if (binding.searchBar.text.isEmpty()) {
-            setReceivedRequests()
+        CoroutineScope(Dispatchers.Main).launch {
+            setSearchBarListener()
+            if (binding.pendingRequests.visibility == View.VISIBLE) {
+                setReceivedRequests()
+            }
         }
         return binding.root
     }
@@ -60,21 +65,19 @@ class UserSearchBarFragment : Fragment() {
     }
 
     private fun setSearchUsers(searchedText: CharSequence) {
-        usersRef.get().addOnSuccessListener { users ->
-            users.forEach { user ->
-                val name = user.get("name").toString()
-                if (name.contains(searchedText)) {
+        CoroutineScope(Dispatchers.Main).launch {
+            val users = storageService.getUsers()
+            for (user in users) {
+                if (user.name!!.contains(searchedText)) {
                     val bind = SearchUserTemplateBinding.inflate(layoutInflater, binding.usersList, true)
-                    bind.nameUser.text = name
-                    bind.userPoints.text = user.get("n_points").toString()
-                    val username = "@" + user.get("username").toString()
+                    bind.nameUser.text = user.name
+                    bind.userPoints.text = user.n_points.toString()
+                    val username = "@" + user.username
                     bind.userName.text = username
-                    val profileURL = user.get("profile_image").toString()
-                    Glide.with(this).load(profileURL).into(bind.userImage)
-                    // bind.user.tag = username
+                    Glide.with(this@UserSearchBarFragment).load(user.profile_image).into(bind.userImage)
                     bind.root.setOnClickListener { view ->
                         view.setBackgroundColor(resources.getColor(R.color.gray, null))
-                        findNavController().navigate(R.id.feedFragment)
+                        findNavController().navigate(R.id.externalUserProfileFragment)
                     }
                 }
             }
@@ -82,57 +85,37 @@ class UserSearchBarFragment : Fragment() {
     }
 
     private fun setReceivedRequests() {
-        usersRef.whereEqualTo("username", actualUsername).get().addOnSuccessListener {
-            val actualUserDoc = it.single()
-            usersRef
-                .document(actualUserDoc.id)
-                .collection("receivedRequests")
-                .get().addOnSuccessListener { requests ->
-                    requests.forEach { request ->
-                        usersRef.whereEqualTo("username", request.id).get().addOnSuccessListener {
-                            val userDoc = it.single()   // Problem if there is a random document
-                            val bind = AcceptUserTemplateBinding.inflate(layoutInflater, binding.usersList, true)
-                            bind.nameUser.text = userDoc.get("name").toString()
-                            val username = userDoc.get("username").toString()
-                            val usernameAt = "@$username"
-                            bind.userName.text = usernameAt
-                            val profileURL = userDoc.get("profile_image").toString()
-                            Glide.with(this).load(profileURL).into(bind.userImage)
-                            bind.userPoints.text = userDoc.get("n_points").toString()
-                            bind.acceptButton.setOnClickListener { acceptUser(username) }
-                        }
-                    }
-                }
+        CoroutineScope(Dispatchers.Main).launch {
+            val requests = storageService.getReceivedRequests(actualUsername)
+            for (request in requests) {
+                val bind = AcceptUserTemplateBinding.inflate(layoutInflater, binding.usersList, true)
+                bind.nameUser.text = request.name
+                val username = "@" + request.username
+                bind.userName.text = username
+                Glide.with(this@UserSearchBarFragment).load(request.profile_image).into(bind.userImage)
+                bind.userPoints.text = request.n_points.toString()
+                bind.acceptButton.setOnClickListener { acceptUser(request.username!!, bind) }
+            }
         }
     }
 
-    private fun acceptUser(username: String) {
-        usersRef.whereEqualTo("username", actualUsername).get().addOnSuccessListener {
-            val actualUserDoc = it.single()
-            val actualUserRef = usersRef.document(actualUserDoc.id)
-            actualUserRef.collection("receivedRequests")
-                .document(username)
-                .delete().addOnSuccessListener {    // Problem if deleting last document available
-                    actualUserRef.collection("followers")
-                        .document(username)
-                        .set(emptyMap<String, String>())
-                    actualUserRef.update("n_followers", FieldValue.increment(1))
-                    usersRef.whereEqualTo("username", username).get().addOnSuccessListener {
-                        val userDoc = it.single()
-                        val userRef = usersRef.document(userDoc.id)
-                        userRef.collection("sentRequests")
-                            .document(actualUsername)
-                            .delete().addOnSuccessListener {    // Problem if deleting last document available
-                                userRef.collection("followings")
-                                    .document(actualUsername)
-                                    .set(emptyMap<String, String>())
-                                userRef.update("n_followings", FieldValue.increment(1))
-                                // Refresh received requests
-                                binding.usersList.removeAllViews()
-                                setReceivedRequests()
-                            }
-                    }
-                }
+    private fun acceptUser(username: String, bind: AcceptUserTemplateBinding) {
+        CoroutineScope(Dispatchers.Main).launch {
+            // Actual User
+            storageService.deleteReceivedRequest(actualUsername, username)
+            storageService.addFollower(actualUsername, username)
+            storageService.incrementFollowers(actualUsername, 1)
+
+            // Accepted User
+            storageService.deleteSentRequest(username, actualUsername)
+            storageService.addFollowing(username, actualUsername)
+            storageService.incrementFollowings(username, 1)
+
+            val message = "Successfully added $username to your followers"
+            utils.displayMessage(requireContext(), message)
+
+            // Refresh Received Requests
+            binding.usersList.removeView(bind.root)
         }
     }
 

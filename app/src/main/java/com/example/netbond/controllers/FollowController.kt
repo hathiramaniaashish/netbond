@@ -7,7 +7,7 @@ class FollowController {
 
     private val db = StorageService()
 
-    suspend fun ifThisRequestedToFollowExt(thisUser: User?, extUser: User?): Boolean {
+     suspend fun ifThisRequestedToFollowExt(thisUser: User?, extUser: User?): Boolean {
         return db.isThisRequestingToFollowExt(thisUser, extUser)
     }
 

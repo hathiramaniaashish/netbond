@@ -9,15 +9,19 @@ import com.bumptech.glide.Glide
 import com.example.netbond.databinding.AnswerTemplateBinding
 import com.example.netbond.databinding.BondTemplateBinding
 import com.example.netbond.databinding.FragmentFeedBinding
-import com.google.firebase.firestore.FirebaseFirestore
+import com.example.netbond.services.StorageService
+import com.example.netbond.services.Utils
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 class FeedFragment : Fragment() {
 
     private lateinit var binding: FragmentFeedBinding
-    private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
-    private var usersRef = db.collection("users")
-    private var bondsRef = db.collection("bonds")
+    private val storageService = StorageService()
+    private val utils = Utils()
     private var actualUsername = "johndoe"
 
     override fun onCreateView(
@@ -31,40 +35,49 @@ class FeedFragment : Fragment() {
     }
 
     private fun setFeed() {
-        usersRef.whereEqualTo("username", actualUsername).get().addOnSuccessListener {
-            val actualUserDoc = it.single()
-            val actualUserRef = usersRef.document(actualUserDoc.id)
-            actualUserRef
-                .collection("followings")
-                .get().addOnSuccessListener { followings ->
-                    followings.forEach { user ->
-                        usersRef.whereEqualTo("username", user.id).get().addOnSuccessListener {
-                            val userDoc = it.single()
-                            val userRef = usersRef.document(userDoc.id)
-                            userRef.collection("bonds")
-                                .get().addOnSuccessListener { bonds ->
-                                    bonds.forEach { bond ->
-                                        val bondRef = bondsRef.document(bond.id)
-                                        // Check if actual user has interacted with this bond
-                                        // ...
-                                        bondRef.get().addOnSuccessListener { bondDoc ->
-                                            val bind = BondTemplateBinding.inflate(layoutInflater, binding.bonds, true)
-                                            val profileURL = userDoc.get("profile_image").toString()
-                                            Glide.with(this).load(profileURL).into(bind.userImage)
-                                            val username = "@" + bondDoc.get("author").toString()
-                                            bind.username.text = username
-                                            bind.question.text = bondDoc.get("question").toString()
-                                            val answers = bondDoc.get("ansList") as HashMap<*, *>
-                                            for (ans in answers) {
-                                                val bindButton = AnswerTemplateBinding.inflate(layoutInflater, bind.answers, true)
-                                                bindButton.answer.text = ans.value.toString()
-                                            }
-                                        }
-                                    }
-                                }
+        CoroutineScope(Dispatchers.Main).launch {
+            val followings = storageService.getFollowings(actualUsername)
+            for (following in followings) {
+                val bonds = storageService.getUserBondsID(following.username!!)
+                for (bondID in bonds) {
+                    if (!storageService.hasInteracted(actualUsername, bondID)) {
+                        val bond = storageService.getBondByID(bondID)
+                        val bindBond = BondTemplateBinding.inflate(layoutInflater, binding.bonds, true)
+                        Glide.with(this@FeedFragment).load(following.profile_image).into(bindBond.userImage)
+                        val username = "@" + following.username
+                        bindBond.username.text = username
+                        bindBond.question.text = bond.question
+                        val keyRight = bond.keyRight!!
+                        val answers = bond.ansList!!
+                        for (ans in answers) {
+                            val bindButton = AnswerTemplateBinding.inflate(layoutInflater, bindBond.answers, true)
+                            bindButton.answer.text = ans.value
+                            bindButton.answer.setOnClickListener {
+                                checkAnswer(ans.key, keyRight, it, bondID, bindBond)
+                            }
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private fun checkAnswer(keyQuestion: String, keyRight: String, view: View, bondID: String, bind: BondTemplateBinding) {
+        CoroutineScope(Dispatchers.Main).launch {
+            if (keyQuestion == keyRight) {
+                view.setBackgroundResource(R.drawable.right_answer_color)
+                utils.displayMessage(requireContext(), "Correct! You earned +1 point")
+                storageService.incrementPoints(actualUsername, 1)
+            } else {
+                view.setBackgroundResource(R.drawable.wrong_answer_color)
+                utils.displayMessage(requireContext(), "Wrong! You lost -1 point")
+                storageService.incrementPoints(actualUsername, -1)
+            }
+            storageService.addInteraction(bondID, actualUsername)
+            delay(3000)
+
+            // Refresh Feed
+            binding.bonds.removeView(bind.root)
         }
     }
 

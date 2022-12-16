@@ -7,17 +7,20 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import com.example.netbond.databinding.FragmentSignUpBinding
+import com.example.netbond.models.User
+import com.example.netbond.services.StorageService
 import com.example.netbond.services.Utils
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class SignUpFragment : Fragment() {
 
     private lateinit var binding: FragmentSignUpBinding
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
-    private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
-    private var usersRef = db.collection("users")
+    private val storageService = StorageService()
+    private val auth = FirebaseAuth.getInstance()
     private val utils = Utils()
 
     override fun onCreateView(
@@ -41,51 +44,28 @@ class SignUpFragment : Fragment() {
         val username = binding.username.text.toString()
         val password = binding.password.text.toString()
 
-        usersRef.get().addOnSuccessListener {
-            val usersList = it
-            var userExists = false
-            usersList.forEach { user ->
-                val actualUsername = user.get("username").toString()
-                if (actualUsername == username) {
-                    userExists = true
-                    utils.displayMessage(binding.root, "This username already exists")
-                }
-            }
-
-            if (!userExists) {
-                auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        addUser(email, name, username)
-                        findNavController().navigate(R.id.feedFragment)
-                    } else {
-                        utils.displayMessage(binding.root, "Sign up failed")
+        if (name.isNotEmpty() && email.isNotEmpty() && username.isNotEmpty() && password.isNotEmpty()) {
+            CoroutineScope(Dispatchers.Main).launch {
+                if (!storageService.existsUser(username)) {
+                    auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener {
+                        if (it.isSuccessful) {
+                            val user = User(
+                                "https://firebasestorage.googleapis.com/v0/b/netbond-app.appspot.com/o/profiles%2Fdefault_avatar_img.jfif?alt=media&token=20fa02a9-bd7d-48af-9641-b35c9f86b735",
+                                name, username, 0, 0, 0, email)
+                            storageService.addNewUser(user)
+                            findNavController().navigate(R.id.feedFragment)
+                        } else {
+                            utils.displayMessage(requireContext(), "Sign up failed")
+                        }
                     }
+
+                } else {
+                    utils.displayMessage(requireContext(), "This username already exists")
                 }
             }
-
+        } else {
+            utils.displayMessage(requireContext(), "All fields must be filled")
         }
-    }
-
-    private fun addUser(email: String, name: String, username: String) {
-        val user = hashMapOf(
-            "username" to username,
-            "email" to email,
-            "n_followers" to 0,
-            "n_followings" to 0,
-            "n_points" to 0,
-            "name" to name,
-            "profile_image" to ""
-        )
-
-        usersRef.add(user).addOnSuccessListener {
-            val userRef = usersRef.document(it.id)
-            userRef.collection("bonds").add(emptyMap<String, String>())
-            userRef.collection("followers").add(emptyMap<String, String>())
-            userRef.collection("followings").add(emptyMap<String, String>())
-            userRef.collection("receivedRequests").add(emptyMap<String, String>())
-            userRef.collection("sentRequests").add(emptyMap<String, String>())
-        }
-
     }
 
 }
