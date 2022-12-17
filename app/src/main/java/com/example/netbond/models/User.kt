@@ -1,9 +1,12 @@
 package com.example.netbond.models
 
+import com.google.firebase.firestore.Exclude
 import com.google.firebase.firestore.IgnoreExtraProperties
 
 @IgnoreExtraProperties
 data class User (
+    @get:Exclude
+    var userDocID: String? = null,
     var profile_image: String? = null,
     var name: String? = null,
     var username: String? = null,

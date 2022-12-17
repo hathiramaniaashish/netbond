@@ -8,12 +8,15 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ListView
 import android.widget.TextView
+import androidx.fragment.app.activityViewModels
 import com.example.netbond.controllers.BondController
+import com.example.netbond.models.UserViewModel
 
 class BondCreationFragment : Fragment(R.layout.fragment_bond_creation) {
 
     private val bondController = BondController()
-    private val currentUsername = "johndoe"// getExternalUsername()
+    private val viewModel: UserViewModel by activityViewModels()
+    var userDocID:String? = null
     private var ansList = hashMapOf<String, String>()
     private var ansId:Int = 0
     private var rightView:View? = null
@@ -23,17 +26,10 @@ class BondCreationFragment : Fragment(R.layout.fragment_bond_creation) {
         super.onCreate(savedInstanceState)
     }
 
-//    override fun onCreateView(
-//        inflater: LayoutInflater, container: ViewGroup?,
-//        savedInstanceState: Bundle?
-//    ): View? {
-//        // Inflate the layout for this fragment
-//        return inflater.inflate(R.layout.activity_bond_creation, container, false)
-//    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        userDocID = viewModel.userDocID!!
         setFields()
     }
 
@@ -76,7 +72,7 @@ class BondCreationFragment : Fragment(R.layout.fragment_bond_creation) {
 
         btnCreateBond.setOnClickListener {
                 bondController.shareBond(
-                    currentUsername,
+                    userDocID!!,
                     editQuestion!!.text.toString(),
                     ansList,
                     rightId.toString()

@@ -16,41 +16,49 @@ class StorageService {
     private val collBonds = db.collection("bonds")
     // private val auth = Firebase.auth
 
-    suspend fun getUser(username: String): User? = collUsers
+    suspend fun getUserDocIDByDocUserName(username: String): String {
+        var userDocID = collUsers
             .whereEqualTo("username", username)
             .get()
             .await()
             .single()
+            .id
+
+        return userDocID
+    }
+
+    suspend fun getUserByDocID(userDocID: String): User? {
+        var user = collUsers
+            .document(userDocID)
+            .get()
+            .await()
             .toObject<User>()
 
+        user?.userDocID = userDocID
+        return user
+    }
+
     fun updateUser(user : User?) : Boolean {
-
-        val username = user!!.username!!
-
         collUsers
-            .whereEqualTo("username", username).get().addOnSuccessListener { result ->
-                val doc = result.single()
-                collUsers
-                    .document(doc.id)
-                    .update(
-                        mapOf(
-                            // Add remaining fields / Pass Custom class?
-                            "name" to user!!.name,
-                            "username" to user!!.username,
-                            "n_followings" to user!!.n_followings!!,
-                            "n_followers" to user!!.n_followers!!,
-                            "n_points" to user!!.n_points!!,
-                            "email" to user!!.email
-                        )
-                    )
-                // ¿Volver a guardar resto de campos para generalizar a nuevo usuario?
-            }
+            .document(user!!.userDocID!!)
+            .update(
+                mapOf(
+                    // Add remaining fields / Pass Custom class?
+                    "profile_image" to user!!.profile_image,
+                    "name" to user!!.name,
+                    "username" to user!!.username,
+                    "n_followings" to user!!.n_followings!!,
+                    "n_followers" to user!!.n_followers!!,
+                    "n_points" to user!!.n_points!!,
+                    "email" to user!!.email
+                )
+            )
         return true
     }
 
     suspend fun isThisRequestingToFollowExt(thisUser: User?, extUser: User?): Boolean {
         return collUsers
-            .document(thisUser!!.username!!)
+            .document(thisUser!!.userDocID!!)
             .collection("sentRequests")
             .document(extUser!!.username!!).get().await().exists()
     }
@@ -62,7 +70,7 @@ class StorageService {
         }
         if (thisUser != null && extUser != null) {
             collUsers
-                .document(thisUser.username.toString())
+                .document(thisUser.userDocID.toString())
                 .collection(coll)
                 .document(extUser.username.toString())
                 .set(hashMapOf<String, Any>("delete" to "this")) // update("timestamp", FieldValue.serverTimestamp())
@@ -77,7 +85,7 @@ class StorageService {
             coll = "sentRequests"
         }
         collUsers
-            .document(thisUser!!.username!!)
+            .document(thisUser!!.userDocID!!)
             .collection(coll)
             .document(extUser!!.username!!)
             .delete()
@@ -85,7 +93,7 @@ class StorageService {
 
     suspend fun isThisFollowingExt(thisUser: User?, extUser: User?): Boolean {
         return collUsers
-            .document(thisUser!!.username!!)
+            .document(thisUser!!.userDocID!!)
             .collection("followings")
             .document(extUser!!.username!!).get().await().exists()
     }
@@ -96,7 +104,7 @@ class StorageService {
             val coll = "followings"
         }
         collUsers
-            .document(thisUser!!.username!!)
+            .document(thisUser!!.userDocID!!)
             .collection(coll)
             .document(extUser!!.username!!).delete()
     }
@@ -116,6 +124,11 @@ class StorageService {
                         .document(bondId)
                         .set(hashMapOf("question" to bond.question))
                 }
+            collBonds
+                .document(bondId)
+                .collection("interactions")
+                .document("initial")
+                .set({})
         }
     }
 
@@ -123,7 +136,7 @@ class StorageService {
         .document(bondId)
         .get()
         .await()
-        .toObject(Bond::class.java)
+        .toObject<Bond>()
 
 }
 
