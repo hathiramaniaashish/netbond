@@ -18,7 +18,7 @@
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="35dp"
         android:background="@drawable/input_search_bar"
-        android:drawableLeft="@drawable/ic_user_search_bar"
+        android:drawableStart="@drawable/ic_user_search_bar"
         android:ems="10"
         android:fontFamily="@font/roboto"
         android:hint="@string/search_users"
@@ -27,6 +27,18 @@
         android:paddingEnd="20dp"
         android:textColor="@color/white"
         android:textColorHint="@color/white"
+        android:textSize="17sp" />
+
+    <TextView
+        android:id="@+id/pending_requests"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="35dp"
+        android:fontFamily="@font/roboto"
+        android:text="@string/pending_requests"
+        android:textColor="@color/logo"
         android:textSize="17sp" />
 
     <ScrollView
@@ -63,7 +75,6 @@
                         android:layout_height="70dp"
                         android:scaleType="centerCrop"
                         app:srcCompat="@drawable/johndoe" />
-
                 </androidx.cardview.widget.CardView>
 
                 <LinearLayout
@@ -104,7 +115,6 @@
                             android:text="@string/points"
                             android:textColor="@color/black"
                             android:textSize="12sp" />
-
                     </LinearLayout>
 
                     <TextView
