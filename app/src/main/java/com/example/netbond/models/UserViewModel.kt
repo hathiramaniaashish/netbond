@@ -7,5 +7,5 @@ import androidx.lifecycle.ViewModel
 class UserViewModel: ViewModel() {
 
     var userDocID : String? = "TldWM2rCZrnvxs9Txj9Y"
-
+    var username : String? = "johndoe"
 }

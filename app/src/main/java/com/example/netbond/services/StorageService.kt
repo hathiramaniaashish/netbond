@@ -17,15 +17,10 @@ class StorageService {
     private val collBonds = db.collection("bonds")
     // private val auth = Firebase.auth
 
-    suspend fun getUserDocIDByDocUserName(username: String): String {
-        var userDocID = collUsers
-            .whereEqualTo("username", username)
-            .get()
-            .await()
-            .single()
-            .id
+    suspend fun getUsernameByUserDocID(userDocID: String): String {
+        var user = getUserByDocID(userDocID)
 
-        return userDocID
+        return user.username!!
     }
 
     suspend fun getUserByDocID(userDocID: String): User {
@@ -37,6 +32,17 @@ class StorageService {
 
         user?.userDocID = userDocID
         return user!!
+    }
+
+    suspend fun getUserByUsername(username: String): User {
+        var user = collUsers
+            .whereEqualTo("username", username)
+            .get()
+            .await()
+            .single()
+            .toObject<User>()
+
+        return user
     }
 
     fun updateUser(user : User?) : Boolean {
@@ -110,26 +116,22 @@ class StorageService {
             .document(extUser!!.username!!).delete()
     }
 
-    fun createBond(bond: Bond) {
+    fun createBond(userDocID:String, bond: Bond) {
         CoroutineScope(Dispatchers.Main).launch {
             val bondId = collBonds
                 .add(bond)
                 .await()
                 .id
-            collUsers
-                .whereEqualTo("username", bond.author).get().addOnSuccessListener { result ->
-                    val doc = result.single()
-                    collUsers
-                        .document(doc.id)
-                        .collection("bonds")
-                        .document(bondId)
-                        .set(hashMapOf("question" to bond.question))
-                }
             collBonds
                 .document(bondId)
                 .collection("interactions")
                 .document("initial")
                 .set({})
+            collUsers
+                .document(userDocID)
+                .collection("bonds")
+                .document(bondId)
+                .set(hashMapOf("question" to bond.question))
         }
     }
 
@@ -198,7 +200,7 @@ class StorageService {
         val requests = collUsers.document(userDoc.id)
             .collection("receivedRequests").get().await()
         requests.forEach { request ->
-            requestsList.add(getUserByDocID(request.id))
+            requestsList.add(getUserByUsername(request.id))
         }
         return requestsList
     }
@@ -209,7 +211,7 @@ class StorageService {
         val followings = collUsers.document(userDoc.id)
             .collection("followings").get().await()
         followings.forEach { following ->
-            followingsList.add(getUserByDocID(following.id))
+            followingsList.add(getUserByUsername(following.id))
         }
         return followingsList
     }

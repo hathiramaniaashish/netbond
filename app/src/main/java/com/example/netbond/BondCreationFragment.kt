@@ -9,11 +9,17 @@ import android.widget.Button
 import android.widget.ListView
 import android.widget.TextView
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.Navigation.findNavController
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.example.netbond.controllers.BondController
+import com.example.netbond.databinding.ActivityMainBinding
 import com.example.netbond.models.UserViewModel
+import kotlinx.android.synthetic.main.activity_main.*
 
 class BondCreationFragment : Fragment(R.layout.fragment_bond_creation) {
 
+    private lateinit var binding: ActivityMainBinding
     private val bondController = BondController()
     private val viewModel: UserViewModel by activityViewModels()
     var userDocID:String? = null
@@ -24,6 +30,7 @@ class BondCreationFragment : Fragment(R.layout.fragment_bond_creation) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = ActivityMainBinding.inflate(layoutInflater)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -39,8 +46,8 @@ class BondCreationFragment : Fragment(R.layout.fragment_bond_creation) {
         val lvWrongAns = requireView().findViewById<ListView>(R.id.lv_wrong_ans)
         val btnCreateBond = requireView().findViewById<Button>(R.id.btn_create_bond)
 
-        val editQuestion = view?.findViewById<TextView>(R.id.edit_question)
-        val editWrongAns = view?.findViewById<TextView>(R.id.edit_wrong_ans)
+        val editQuestion = requireView().findViewById<TextView>(R.id.edit_question)
+        val editWrongAns = requireView().findViewById<TextView>(R.id.edit_wrong_ans)
 
         // imgProfile.setImageURI(user.profile_image)
         // Glide.with(this).load(user.profile_image).into(imgProfile)
@@ -71,12 +78,14 @@ class BondCreationFragment : Fragment(R.layout.fragment_bond_creation) {
 
 
         btnCreateBond.setOnClickListener {
-                bondController.shareBond(
-                    userDocID!!,
-                    editQuestion!!.text.toString(),
-                    ansList,
-                    rightId.toString()
-                )
+            bondController.shareBond(
+                userDocID!!,
+                editQuestion!!.text.toString(),
+                ansList,
+                rightId.toString()
+            )
+            this.requireActivity().fab.visibility = View.VISIBLE
+            findNavController().navigate(R.id.userProfileFragment)
         }
 
     }

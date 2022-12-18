@@ -5,10 +5,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import com.bumptech.glide.Glide
 import com.example.netbond.databinding.AnswerTemplateBinding
 import com.example.netbond.databinding.BondTemplateBinding
 import com.example.netbond.databinding.FragmentFeedBinding
+import com.example.netbond.models.UserViewModel
 import com.example.netbond.services.StorageService
 import com.example.netbond.services.Utils
 import kotlinx.coroutines.CoroutineScope
@@ -22,7 +24,8 @@ class FeedFragment : Fragment() {
     private lateinit var binding: FragmentFeedBinding
     private val storageService = StorageService()
     private val utils = Utils()
-    private var actualUsername = "johndoe"
+//    private val viewModel: UserViewModel by activityViewModels()
+    private var actualUsername: String = "johndoe"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
