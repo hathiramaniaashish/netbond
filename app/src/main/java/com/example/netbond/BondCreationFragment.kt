@@ -9,8 +9,6 @@ import android.widget.Button
 import android.widget.ListView
 import android.widget.TextView
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.Navigation.findNavController
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.example.netbond.controllers.BondController
 import com.example.netbond.databinding.ActivityMainBinding
@@ -43,21 +41,13 @@ class BondCreationFragment : Fragment(R.layout.fragment_bond_creation) {
     fun setFields() {
 
         val btnAddWrong = requireView().findViewById<Button>(R.id.btn_add_wrong_ans)
-        val lvWrongAns = requireView().findViewById<ListView>(R.id.lv_wrong_ans)
+        val edTxtAnswers = requireView().findViewById<ListView>(R.id.lv_wrong_ans)
         val btnCreateBond = requireView().findViewById<Button>(R.id.btn_create_bond)
 
         val editQuestion = requireView().findViewById<TextView>(R.id.edit_question)
         val editWrongAns = requireView().findViewById<TextView>(R.id.edit_wrong_ans)
 
-        // imgProfile.setImageURI(user.profile_image)
-        // Glide.with(this).load(user.profile_image).into(imgProfile)
-        // Picasso.get().load(user.profile_image).into(imgProfile)
-
         btnAddWrong?.setOnClickListener{
-//            ansList.put(idQuest.plus(1),
-//                Pair(false, editWrongAnsList?.text.toString()))
-//            editRightAns?.text = ansList.last()
-
             if (editWrongAns != null && !editWrongAns.text.isNullOrEmpty()) {
                 ansList.put(ansId.toString(), editWrongAns.text.toString())
                 ansId = ansId + 1
@@ -66,7 +56,7 @@ class BondCreationFragment : Fragment(R.layout.fragment_bond_creation) {
             }
         }
 
-        lvWrongAns.setOnItemClickListener() {
+        edTxtAnswers.setOnItemClickListener() {
             parent, view, position, id ->
             rightView?.setBackgroundColor(Color.TRANSPARENT)
             if (!view.equals(rightView)) {
@@ -95,7 +85,6 @@ class BondCreationFragment : Fragment(R.layout.fragment_bond_creation) {
         lvWrongAns.adapter = ArrayAdapter<String>(
             this.requireContext(),
             android.R.layout.simple_list_item_1,
-//            arrayOf(ansList.values.toList())
             ansList.values.toList()
         )
     }
