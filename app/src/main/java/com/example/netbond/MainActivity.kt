@@ -7,6 +7,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.navigation.findNavController
 import com.example.netbond.databinding.ActivityMainBinding
 
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
@@ -15,8 +16,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         window.statusBarColor = getColor(R.color.background)
         binding = ActivityMainBinding.inflate(layoutInflater)
-        // binding.toolBar.visibility = View.GONE
-        // binding.bottomNav.visibility = View.GONE
         binding.root.setOnClickListener { hideKeyboard() }
         setUpBottomNav()
         setBtnAddBond()

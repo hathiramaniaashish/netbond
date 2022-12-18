@@ -11,4 +11,10 @@ class AuthService {
       return user?.email
    }
 
+   fun logOut() {
+      if (checkUserSignedIn() != null) {
+         auth.signOut()
+      }
+   }
+
 }
