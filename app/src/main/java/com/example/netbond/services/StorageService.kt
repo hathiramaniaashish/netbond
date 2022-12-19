@@ -15,42 +15,57 @@ class StorageService {
     private val db = FirebaseFirestore.getInstance()
     private val collUsers = db.collection("users")
     private val collBonds = db.collection("bonds")
+    // private val auth = Firebase.auth
 
-    suspend fun getUser(username: String): User = collUsers
+    suspend fun getUsernameByUserDocID(userDocID: String): String {
+        var user = getUserByDocID(userDocID)
+
+        return user.username!!
+    }
+
+    suspend fun getUserByDocID(userDocID: String): User {
+        var user = collUsers
+            .document(userDocID)
+            .get()
+            .await()
+            .toObject<User>()
+
+        user?.userDocID = userDocID
+        return user!!
+    }
+
+    suspend fun getUserByUsername(username: String): User {
+        var user = collUsers
             .whereEqualTo("username", username)
             .get()
             .await()
             .single()
             .toObject<User>()
 
+        return user
+    }
+
     fun updateUser(user : User?) : Boolean {
-
-        val username = user!!.username!!
-
         collUsers
-            .whereEqualTo("username", username).get().addOnSuccessListener { result ->
-                val doc = result.single()
-                collUsers
-                    .document(doc.id)
-                    .update(
-                        mapOf(
-                            // Add remaining fields / Pass Custom class?
-                            "name" to user!!.name,
-                            "username" to user!!.username,
-                            "n_followings" to user!!.n_followings!!,
-                            "n_followers" to user!!.n_followers!!,
-                            "n_points" to user!!.n_points!!,
-                            "email" to user!!.email
-                        )
-                    )
-                // ¿Volver a guardar resto de campos para generalizar a nuevo usuario?
-            }
+            .document(user!!.userDocID!!)
+            .update(
+                mapOf(
+                    // Add remaining fields / Pass Custom class?
+                    "profile_image" to user!!.profile_image,
+                    "name" to user!!.name,
+                    "username" to user!!.username,
+                    "n_followings" to user!!.n_followings!!,
+                    "n_followers" to user!!.n_followers!!,
+                    "n_points" to user!!.n_points!!,
+                    "email" to user!!.email
+                )
+            )
         return true
     }
 
     suspend fun isThisRequestingToFollowExt(thisUser: User?, extUser: User?): Boolean {
         return collUsers
-            .document(thisUser!!.username!!)
+            .document(thisUser!!.userDocID!!)
             .collection("sentRequests")
             .document(extUser!!.username!!).get().await().exists()
     }
@@ -62,7 +77,7 @@ class StorageService {
         }
         if (thisUser != null && extUser != null) {
             collUsers
-                .document(thisUser.username.toString())
+                .document(thisUser.userDocID.toString())
                 .collection(coll)
                 .document(extUser.username.toString())
                 .set(hashMapOf<String, Any>("delete" to "this")) // update("timestamp", FieldValue.serverTimestamp())
@@ -77,7 +92,7 @@ class StorageService {
             coll = "sentRequests"
         }
         collUsers
-            .document(thisUser!!.username!!)
+            .document(thisUser!!.userDocID!!)
             .collection(coll)
             .document(extUser!!.username!!)
             .delete()
@@ -85,7 +100,7 @@ class StorageService {
 
     suspend fun isThisFollowingExt(thisUser: User?, extUser: User?): Boolean {
         return collUsers
-            .document(thisUser!!.username!!)
+            .document(thisUser!!.userDocID!!)
             .collection("followings")
             .document(extUser!!.username!!).get().await().exists()
     }
@@ -96,26 +111,27 @@ class StorageService {
             val coll = "followings"
         }
         collUsers
-            .document(thisUser!!.username!!)
+            .document(thisUser!!.userDocID!!)
             .collection(coll)
             .document(extUser!!.username!!).delete()
     }
 
-    fun createBond(bond: Bond) {
+    fun createBond(userDocID:String, bond: Bond) {
         CoroutineScope(Dispatchers.Main).launch {
             val bondId = collBonds
                 .add(bond)
                 .await()
                 .id
+            collBonds
+                .document(bondId)
+                .collection("interactions")
+                .document("initial")
+                .set({})
             collUsers
-                .whereEqualTo("username", bond.author).get().addOnSuccessListener { result ->
-                    val doc = result.single()
-                    collUsers
-                        .document(doc.id)
-                        .collection("bonds")
-                        .document(bondId)
-                        .set(hashMapOf("question" to bond.question))
-                }
+                .document(userDocID)
+                .collection("bonds")
+                .document(bondId)
+                .set(hashMapOf("question" to bond.question))
         }
     }
 
@@ -123,7 +139,7 @@ class StorageService {
         .document(bondId)
         .get()
         .await()
-        .toObject(Bond::class.java)
+        .toObject<Bond>()
 
 
     //-------------------------
@@ -184,7 +200,7 @@ class StorageService {
         val requests = collUsers.document(userDoc.id)
             .collection("receivedRequests").get().await()
         requests.forEach { request ->
-            requestsList.add(getUser(request.id))
+            requestsList.add(getUserByUsername(request.id))
         }
         return requestsList
     }
@@ -195,7 +211,7 @@ class StorageService {
         val followings = collUsers.document(userDoc.id)
             .collection("followings").get().await()
         followings.forEach { following ->
-            followingsList.add(getUser(following.id))
+            followingsList.add(getUserByUsername(following.id))
         }
         return followingsList
     }
@@ -249,9 +265,6 @@ class StorageService {
         collUsers.document(userDoc.id)
             .update("n_points", FieldValue.increment(number)).await()
     }
-
-
-
 }
 
 

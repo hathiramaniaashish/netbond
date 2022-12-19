@@ -1,6 +1,7 @@
 package com.example.netbond
 
 import android.app.Activity
+import android.app.ProgressDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -8,11 +9,15 @@ import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import androidx.fragment.app.activityViewModels
+import com.example.netbond.models.UserViewModel
 import com.example.netbond.services.StorageService
 import com.google.firebase.storage.FirebaseStorage
+import kotlinx.android.synthetic.main.search_user_template.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import java.util.*
 
 class AccountSettingFragment : Fragment(R.layout.fragment_account_settings) {
@@ -22,21 +27,16 @@ class AccountSettingFragment : Fragment(R.layout.fragment_account_settings) {
     private var filePath: Uri? = null
     private val fStore = FirebaseStorage.getInstance()
     private val fStoreRef = FirebaseStorage.getInstance().reference
+    private val viewModel: UserViewModel by activityViewModels()
+    var userDocID:String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
 
-//    override fun onCreateView(
-//        inflater: LayoutInflater, container: ViewGroup?,
-//        savedInstanceState: Bundle?
-//    ): View? {
-//        // Inflate the layout for this fragment
-//        return inflater.inflate(R.layout.fragment_account_setting, container, false)
-//    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
+        userDocID = viewModel.userDocID!!
         getUserData()
         setImageUploader()
 
@@ -45,8 +45,6 @@ class AccountSettingFragment : Fragment(R.layout.fragment_account_settings) {
     }
 
     private fun getUserData() {
-
-        val thisUsername = "johndoe"// getThisUsername()
 
         // El botón debería tener la imagen como fondo
         // val imgProfile = findViewById<ImageView>(R.id.img_profile)
@@ -59,7 +57,7 @@ class AccountSettingFragment : Fragment(R.layout.fragment_account_settings) {
         // Picasso.get().load(user.profile_image).into(imgProfile)
 
         CoroutineScope(Dispatchers.Main).launch{
-            var user = db.getUser(thisUsername)
+            var user = db.getUserByDocID(userDocID!!)
 
             if (user != null) {
                 editName?.text = user.name
@@ -71,8 +69,6 @@ class AccountSettingFragment : Fragment(R.layout.fragment_account_settings) {
 
     private fun updateUserData() {
 
-        val thisUsername = "johndoe"// getThisUsername()
-
         // El botón debería tener la imagen como fondo
         // val imgProfile = findViewById<ImageView>(R.id.img_profile)
         val editName = view?.findViewById<TextView>(R.id.edit_name)
@@ -85,7 +81,7 @@ class AccountSettingFragment : Fragment(R.layout.fragment_account_settings) {
 
         val btnSaveSettings = requireView().findViewById<Button>(R.id.btn_save_settings)
         CoroutineScope(Dispatchers.Main).launch{
-            var user = db.getUser(thisUsername)
+            var user = db.getUserByDocID(userDocID!!)
             if (user != null) {
                 user.name = editName?.text.toString()
                 user.username = editUsername?.text.toString()
@@ -103,7 +99,10 @@ class AccountSettingFragment : Fragment(R.layout.fragment_account_settings) {
 
         btnChangeProfile.setOnClickListener {
             launchGallery()
-            uploadImage()
+            CoroutineScope(Dispatchers.Main).launch {
+                val newImageUrl = uploadImage()
+                setNewImage(newImageUrl)
+            }
         }
     }
 
@@ -127,13 +126,34 @@ class AccountSettingFragment : Fragment(R.layout.fragment_account_settings) {
         }
     }
 
-    private fun uploadImage(){
+    private suspend fun uploadImage():String?{
+//        val progressDialog: ProgressDialog = ProgressDialog(this.context)
+//        progressDialog.setTitle("Uploading")
+//        progressDialog.show()
         if (filePath != null){
             val ref = fStoreRef?.child("profiles/" + UUID.randomUUID().toString())
             val uploadTask = ref?.putFile(filePath!!)
+            val newImageURL = uploadTask
+                ?.await()
+                ?.storage
+                ?.downloadUrl
+                ?.await()
+                .toString()
+            return newImageURL
 
         } else {
-            println("SALIÓ MAAAL 2")
+            println("Something went wrong while uploading")
+        }
+        return null
+    }
+
+    private fun setNewImage(newURI:String?) {
+        if (newURI != null) {
+            CoroutineScope(Dispatchers.Main).launch {
+                var user = db.getUserByDocID(userDocID!!)
+                user!!.profile_image = newURI
+                db.updateUser(user)
+            }
         }
     }
 

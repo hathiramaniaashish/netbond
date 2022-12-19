@@ -34,35 +34,6 @@
                 android:textSize="17dp" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <TextView
-            android:id="@+id/txt_photo_profile"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="15dp"
-            android:padding="15dp"
-            android:text="Add media"
-            android:textColor="@color/textInfo"
-            android:textSize="17dp" />
-
-        <!--TextView
-            android:id="@+id/textView7"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="TextView"
-            android:textColor="@color/textInfo" /-->
-
-        <Button
-            android:id="@+id/btn_add_media"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="15dp"
-            android:background="@android:color/transparent"
-            android:text="Add"
-            app:strokeColor="@color/secondary"
-            app:strokeWidth="10dp" />
-
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -71,7 +42,6 @@
             android:hint="Wrong answers"
             android:textColorHint="@color/textInfo"
             app:boxStrokeColor="@color/textInfo"
-            app:layout_constraintStart_toEndOf="@id/btn_add_media"
             app:layout_constraintTop_toBottomOf="parent">
 
             <com.google.android.material.textfield.TextInputEditText
