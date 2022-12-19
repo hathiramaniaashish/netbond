@@ -1,6 +1,7 @@
 package com.example.netbond
 
 import android.os.Bundle
+import androidx.core.os.bundleOf
 import android.text.Editable
 import android.text.TextWatcher
 import androidx.fragment.app.Fragment
@@ -17,6 +18,7 @@ import com.example.netbond.services.Utils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import androidx.fragment.app.setFragmentResult
 
 
 class UserSearchBarFragment : Fragment() {
@@ -77,6 +79,8 @@ class UserSearchBarFragment : Fragment() {
                     Glide.with(this@UserSearchBarFragment).load(user.profile_image).into(bind.userImage)
                     bind.root.setOnClickListener { view ->
                         view.setBackgroundColor(resources.getColor(R.color.gray, null))
+
+                        setFragmentResult("requestKey", bundleOf("bundleKey" to user.username))
                         findNavController().navigate(R.id.externalUserProfileFragment)
                     }
                 }

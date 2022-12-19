@@ -24,7 +24,6 @@ class FeedFragment : Fragment() {
     private lateinit var binding: FragmentFeedBinding
     private val storageService = StorageService()
     private val utils = Utils()
-//    private val viewModel: UserViewModel by activityViewModels()
     private var actualUsername: String = "johndoe"
 
     override fun onCreateView(

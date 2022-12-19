@@ -7,6 +7,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResultListener
 import com.bumptech.glide.Glide
 import com.example.netbond.controllers.FollowController
 import com.example.netbond.models.User
@@ -22,10 +23,15 @@ class ExternalUserProfileFragment : Fragment(R.layout.fragment_external_user_pro
     private val followController = FollowController()
     private val viewModel: UserViewModel by activityViewModels()
     var userDocID:String? = null
-    private val externalUsername = "IuRVRpRILq1LXieP0h8Z"// getExternalUsername()
+    private var extUsername: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setFragmentResultListener("requestKey") { requestKey, bundle ->
+            // We use a String here, but any type that can be put in a Bundle is supported
+            extUsername = bundle.getString("bundleKey")
+            // Do something with the result
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -47,11 +53,8 @@ class ExternalUserProfileFragment : Fragment(R.layout.fragment_external_user_pro
         var txtnumPoints = view?.findViewById<TextView>(R.id.txt_num_points)
         var txtnumFollowings = view?.findViewById<TextView>(R.id.txt_num_followings)
 
-        // imgProfile.setImageURI(user.profile_image)
-        // Glide.with(this).load(user.profile_image).into(imgProfile)
-        // Picasso.get().load(user.profile_image).into(imgProfile)
         CoroutineScope(Dispatchers.Main).launch{
-            var extUser: User? = db.getUserByDocID(userDocID!!)
+            var extUser: User? = db.getUserByUsername(extUsername!!)
             Glide.with(requireView()).load(extUser!!.profile_image).into(imgProfile!!)
             txtName!!.text = extUser!!.name
             txtUsername!!.text = "@" + extUser!!.username
@@ -62,40 +65,30 @@ class ExternalUserProfileFragment : Fragment(R.layout.fragment_external_user_pro
     }
 
     fun setFollowBtn() {
-
-//        val intent = Intent(this, ExternalUserProfileActivity::class.java)
         val btnFollow = view?.findViewById<Button>(R.id.btn_follow)
         CoroutineScope(Dispatchers.Main).launch {
             var thisUser = db.getUserByDocID(userDocID!!)
-            var extUser = db.getUserByDocID(externalUsername)
+            var extUserDocID = db.getUserDocIDByUsername(extUsername!!)
+            var extUser = db.getUserByDocID(extUserDocID)
             if (followController.ifThisRequestedToFollowExt(thisUser, extUser)) {
                 btnFollow!!.text = "Pending"
                 btnFollow!!.setOnClickListener {
                     btnFollow!!.text = "Follow"
                     followController.thisUnrequestsToFollowExt(thisUser, extUser)
-//                    startActivity(intent)
                 }
             } else if (followController.ifThisFollowsExt(thisUser, extUser)) {
                 btnFollow!!.text = "Unfollow"
                 btnFollow!!.setOnClickListener {
                     btnFollow!!.text = "Follow"
                     followController.thisUnfollowsExt(thisUser, extUser)
-//                    startActivity(intent)
                 }
             } else {
                 btnFollow!!.text = "Follow"
                 btnFollow!!.setOnClickListener {
                     btnFollow!!.text = "Pending"
                     followController.thisRequestsToFollowExt(thisUser, extUser)
-//                    startActivity(intent)
                 }
             }
         }
     }
-
-//    private fun getName() {
-//        // Get the decimal value from the cost of service text field
-//        val stringInTextField = binding.editxt_name.text.toString()
-//        val cost = stringInTextField.toDoubleOrNull()
-//    }
 }
