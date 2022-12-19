@@ -41,7 +41,12 @@ class ExternalUserProfileFragment : Fragment(R.layout.fragment_external_user_pro
         // Load data viewed of external user
         loadExternalUserData()
         // Set button for follow/requested/unfollow
-        setFollowBtn()
+
+        val btnFollow = view?.findViewById<Button>(R.id.btn_follow)
+        setFollowStatus()
+        btnFollow!!.setOnClickListener {
+            setFollowStatus()
+        }
     }
 
     fun loadExternalUserData() {
@@ -64,30 +69,23 @@ class ExternalUserProfileFragment : Fragment(R.layout.fragment_external_user_pro
         }
     }
 
-    fun setFollowBtn() {
-        val btnFollow = view?.findViewById<Button>(R.id.btn_follow)
+    fun setFollowStatus(update: Boolean) {
+        val btnFollow = requireView().findViewById<Button>(R.id.btn_follow)
         CoroutineScope(Dispatchers.Main).launch {
             var thisUser = db.getUserByDocID(userDocID!!)
             var extUserDocID = db.getUserDocIDByUsername(extUsername!!)
             var extUser = db.getUserByDocID(extUserDocID)
-            if (followController.ifThisRequestedToFollowExt(thisUser, extUser)) {
+            if (followController.ifThisRequestedToFollowExt(thisUser, extUser) or (update)) {
                 btnFollow!!.text = "Pending"
-                btnFollow!!.setOnClickListener {
-                    btnFollow!!.text = "Follow"
-                    followController.thisUnrequestsToFollowExt(thisUser, extUser)
-                }
-            } else if (followController.ifThisFollowsExt(thisUser, extUser)) {
+                followController.thisUnrequestsToFollowExt(thisUser, extUser)
+            } else if (followController.ifThisFollowsExt(thisUser, extUser) or (update)) {
                 btnFollow!!.text = "Unfollow"
-                btnFollow!!.setOnClickListener {
-                    btnFollow!!.text = "Follow"
-                    followController.thisUnfollowsExt(thisUser, extUser)
-                }
+                followController.thisUnfollowsExt(thisUser, extUser)
+            } else if (update) {
+                btnFollow!!.text = "Following"
+                followController.thisRequestsToFollowExt(thisUser, extUser)
             } else {
                 btnFollow!!.text = "Follow"
-                btnFollow!!.setOnClickListener {
-                    btnFollow!!.text = "Pending"
-                    followController.thisRequestsToFollowExt(thisUser, extUser)
-                }
             }
         }
     }
