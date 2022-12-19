@@ -1,7 +1,6 @@
 package com.example.netbond
 
 import android.app.Activity
-import android.app.ProgressDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -11,9 +10,9 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.activityViewModels
 import com.example.netbond.models.UserViewModel
+import com.example.netbond.services.AuthService
 import com.example.netbond.services.StorageService
 import com.google.firebase.storage.FirebaseStorage
-import kotlinx.android.synthetic.main.search_user_template.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -23,6 +22,7 @@ import java.util.*
 class AccountSettingFragment : Fragment(R.layout.fragment_account_settings) {
 
     private val db = StorageService()
+    private val authService = AuthService()
     private val PICK_IMAGE_REQUEST = 71
     private var filePath: Uri? = null
     private val fStore = FirebaseStorage.getInstance()
@@ -39,6 +39,13 @@ class AccountSettingFragment : Fragment(R.layout.fragment_account_settings) {
         userDocID = viewModel.userDocID!!
         getUserData()
         setImageUploader()
+
+        val txtLogOut = requireView().findViewById<TextView>(R.id.txt_Log_Out)
+        txtLogOut.setOnClickListener {
+            authService.logOut()
+            val intent = Intent(this.context, LoginActivity().javaClass)
+            startActivity(intent)
+        }
 
         val btnSaveSettings = requireView().findViewById<Button>(R.id.btn_save_settings)
         btnSaveSettings.setOnClickListener { updateUserData() }
@@ -68,18 +75,10 @@ class AccountSettingFragment : Fragment(R.layout.fragment_account_settings) {
     }
 
     private fun updateUserData() {
-
-        // El botón debería tener la imagen como fondo
-        // val imgProfile = findViewById<ImageView>(R.id.img_profile)
         val editName = view?.findViewById<TextView>(R.id.edit_name)
         val editUsername = view?.findViewById<TextView>(R.id.edit_username)
         val editEmail = view?.findViewById<TextView>(R.id.edit_email)
 
-        // imgProfile.setImageURI(user.profile_image)
-        // Glide.with(this).load(user.profile_image).into(imgProfile)
-        // Picasso.get().load(user.profile_image).into(imgProfile)
-
-        val btnSaveSettings = requireView().findViewById<Button>(R.id.btn_save_settings)
         CoroutineScope(Dispatchers.Main).launch{
             var user = db.getUserByDocID(userDocID!!)
             if (user != null) {

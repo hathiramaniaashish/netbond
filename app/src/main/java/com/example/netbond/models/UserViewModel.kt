@@ -6,6 +6,6 @@ import androidx.lifecycle.ViewModel
 
 class UserViewModel: ViewModel() {
 
-    var userDocID : String? = "TldWM2rCZrnvxs9Txj9Y"
-    var username : String? = "johndoe"
+    var userDocID : String? = "RUbQUoYt16pNifQFAQyt"
+    var username : String? = "krish"
 }

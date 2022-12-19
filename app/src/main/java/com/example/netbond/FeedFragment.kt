@@ -23,7 +23,6 @@ class FeedFragment : Fragment() {
     private lateinit var binding: FragmentFeedBinding
     private val storageService = StorageService()
     private val utils = Utils()
-//    private val viewModel: UserViewModel by activityViewModels()
     private var actualUsername: String = "johndoe"
 
     override fun onCreateView(
@@ -38,13 +37,11 @@ class FeedFragment : Fragment() {
 
     private fun setFeed() {
         CoroutineScope(Dispatchers.Main).launch {
-            var hasBonds = false
             val followings = storageService.getFollowings(actualUsername)
             for (following in followings) {
                 val bonds = storageService.getUserBondsID(following.username!!)
                 for (bondID in bonds) {
                     if (!storageService.hasInteracted(actualUsername, bondID)) {
-                        hasBonds = true
                         val bond = storageService.getBondByID(bondID)
                         val bindBond = BondTemplateBinding.inflate(layoutInflater, binding.bonds, true)
                         Glide.with(this@FeedFragment).load(following.profile_image).into(bindBond.userImage)
@@ -62,11 +59,6 @@ class FeedFragment : Fragment() {
                         }
                     }
                 }
-            }
-            if (hasBonds) {
-                binding.message.visibility = View.GONE
-            } else {
-                binding.message.visibility = View.VISIBLE
             }
         }
     }

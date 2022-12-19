@@ -23,6 +23,17 @@ class StorageService {
         return user.username!!
     }
 
+    suspend fun getUserDocIDByUsername(username: String): String {
+        var userDocID = collUsers
+            .whereEqualTo("username", username)
+            .get()
+            .await()
+            .single()
+            .id
+
+        return userDocID
+    }
+
     suspend fun getUserByDocID(userDocID: String): User {
         var user = collUsers
             .document(userDocID)
@@ -42,6 +53,7 @@ class StorageService {
             .single()
             .toObject<User>()
 
+        user?.userDocID = getUserDocIDByUsername(username)
         return user
     }
 
