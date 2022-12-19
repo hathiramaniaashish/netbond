@@ -15,10 +15,4 @@ data class User (
 
     @get:Exclude
     var userDocID: String? = null
-
-//    var followings: List<String>? = null,
-//    var followers: List<String>? = null,
-//    var sentRequest: List<String>? = null,
-//    var receivedRequest: List<String>? = null,
-//    var bonds: List<String>? = null
 )

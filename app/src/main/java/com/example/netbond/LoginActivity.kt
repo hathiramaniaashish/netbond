@@ -5,15 +5,14 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.inputmethod.InputMethodManager
 import com.example.netbond.databinding.ActivityLoginBinding
-import com.example.netbond.services.AuthService
 import com.example.netbond.services.Utils
 import com.google.firebase.auth.FirebaseAuth
+
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
     private val auth = FirebaseAuth.getInstance()
-    private val authService = AuthService()
     private val utils = Utils()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,10 +42,6 @@ class LoginActivity : AppCompatActivity() {
         if (email.isNotEmpty() && password.isNotEmpty()) {
             auth.signInWithEmailAndPassword(email, password).addOnCompleteListener {
                 if (it.isSuccessful) {
-                    val userEmail = authService.checkUserSignedIn()
-                    if (userEmail != null) {
-                        // Add user to ViewModel ...
-                    }
                     navigateToActivity(MainActivity())
                 } else {
                     utils.displayMessage(this, "Authentication failed")

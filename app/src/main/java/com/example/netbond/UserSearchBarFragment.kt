@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.netbond.databinding.AcceptUserTemplateBinding
@@ -19,6 +20,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import androidx.fragment.app.setFragmentResult
+import com.example.netbond.models.UserViewModel
 
 
 class UserSearchBarFragment : Fragment() {
@@ -26,12 +28,15 @@ class UserSearchBarFragment : Fragment() {
     private lateinit var binding: FragmentUserSearchBarBinding
     private val storageService = StorageService()
     private val utils = Utils()
-    private var actualUsername = "johndoe"
+    private val viewModel: UserViewModel by activityViewModels()
+    private var actualUsername = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        setActualUsername()
         // Inflate the layout for this fragment
         binding = FragmentUserSearchBarBinding.inflate(inflater, container, false)
         CoroutineScope(Dispatchers.Main).launch {
@@ -41,6 +46,12 @@ class UserSearchBarFragment : Fragment() {
             }
         }
         return binding.root
+    }
+
+    private fun setActualUsername() {
+        viewModel.user.observe(viewLifecycleOwner) {
+            actualUsername = it.username!!
+        }
     }
 
     private fun setSearchBarListener() {
@@ -79,7 +90,6 @@ class UserSearchBarFragment : Fragment() {
                     Glide.with(this@UserSearchBarFragment).load(user.profile_image).into(bind.userImage)
                     bind.root.setOnClickListener { view ->
                         view.setBackgroundColor(resources.getColor(R.color.gray, null))
-
                         setFragmentResult("requestKey", bundleOf("bundleKey" to user.username))
                         findNavController().navigate(R.id.externalUserProfileFragment)
                     }

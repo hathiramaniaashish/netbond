@@ -36,7 +36,7 @@ class AccountSettingFragment : Fragment(R.layout.fragment_account_settings) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        userDocID = viewModel.userDocID!!
+        userDocID = viewModel.user.value?.userDocID
         getUserData()
         setImageUploader()
 

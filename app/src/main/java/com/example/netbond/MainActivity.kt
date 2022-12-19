@@ -4,16 +4,27 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import androidx.activity.viewModels
 import androidx.navigation.findNavController
 import com.example.netbond.databinding.ActivityMainBinding
+import com.example.netbond.models.UserViewModel
+import com.example.netbond.services.AuthService
+import com.example.netbond.services.StorageService
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private val authService = AuthService()
+    private val storageService = StorageService()
+    private val viewModel: UserViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setViewModel()
         window.statusBarColor = getColor(R.color.background)
         binding = ActivityMainBinding.inflate(layoutInflater)
         binding.root.setOnClickListener { hideKeyboard() }
@@ -26,6 +37,16 @@ class MainActivity : AppCompatActivity() {
         val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(binding.root.windowToken, 0)
         currentFocus?.clearFocus()
+    }
+
+    private fun setViewModel() {
+        CoroutineScope(Dispatchers.Main).launch {
+            val userEmail = authService.checkUserSignedIn()
+            if (userEmail != null) {
+                val user = storageService.getUserByEmail(userEmail)
+                viewModel.setUser(user)
+            }
+        }
     }
 
     private fun setUpBottomNav() {
@@ -47,7 +68,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
 
     private fun setBtnAddBond() {
         binding.fab.setOnClickListener{
