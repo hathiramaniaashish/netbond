@@ -153,6 +153,19 @@ class StorageService {
         .await()
         .toObject<Bond>()
 
+    fun deleteBondByBondID(userDocID:String, bondID: String) {
+        CoroutineScope(Dispatchers.Main).launch {
+            collBonds
+                .document(bondID)
+                .delete()
+            collUsers
+                .document(userDocID)
+                .collection("bonds")
+                .document(bondID)
+                .delete()
+        }
+    }
+
 
     //-------------------------
     // AASHISH

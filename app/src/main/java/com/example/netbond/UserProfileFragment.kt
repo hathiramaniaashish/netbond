@@ -16,6 +16,7 @@ import com.example.netbond.models.UserViewModel
 import com.example.netbond.services.StorageService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class UserProfileFragment : Fragment(R.layout.fragment_user_profile) {
@@ -86,7 +87,19 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile) {
                     val bindButton = AnswerTemplateBinding.inflate(layoutInflater, bindBond.answers, true)
                     bindButton.answer.text = ans.value
                 }
+                bindBond.btnDeleteBond.setOnClickListener {
+                    deleteBond(bondID, bindBond)
+                }
             }
+        }
+    }
+
+    private fun deleteBond(bondID: String, bind: PrivateBondTemplateBinding) {
+        CoroutineScope(Dispatchers.Main).launch {
+            db.deleteBondByBondID(userDocID!!, bondID)
+
+            // Refresh Feed
+            binding.bonds.removeView(bind.root)
         }
     }
 

@@ -57,6 +57,16 @@
                 tools:visibility="visible" />
         </LinearLayout>
 
+        <Button
+            android:id="@+id/btn_delete_bond"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/warning"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:text="Delete"
+            android:textColor="@color/white"
+            android:textSize="20dp"/>
     </LinearLayout>
 
 </LinearLayout>
