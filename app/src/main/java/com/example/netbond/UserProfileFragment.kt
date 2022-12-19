@@ -11,10 +11,7 @@ import android.widget.TextView
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
-import com.example.netbond.databinding.AnswerTemplateBinding
-import com.example.netbond.databinding.BondTemplateBinding
-import com.example.netbond.databinding.FragmentFeedBinding
-import com.example.netbond.databinding.FragmentUserProfileBinding
+import com.example.netbond.databinding.*
 import com.example.netbond.models.UserViewModel
 import com.example.netbond.services.StorageService
 import kotlinx.coroutines.CoroutineScope
@@ -82,12 +79,8 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile) {
             val bonds = db.getUserBondsID(user.username!!)
             for (bondID in bonds) {
                 val bond = db.getBondByID(bondID)
-                val bindBond = BondTemplateBinding.inflate(layoutInflater, binding.bonds, true)
-                Glide.with(this@UserProfileFragment).load(user.profile_image).into(bindBond.userImage)
-                val username = "@" + user.username
-                bindBond.username.text = username
+                val bindBond = PrivateBondTemplateBinding.inflate(layoutInflater, binding.bonds, true)
                 bindBond.question.text = bond.question
-                val keyRight = bond.keyRight!!
                 val answers = bond.ansList!!
                 for (ans in answers) {
                     val bindButton = AnswerTemplateBinding.inflate(layoutInflater, bindBond.answers, true)

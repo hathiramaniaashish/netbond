@@ -21,7 +21,7 @@
             android:layout_marginTop="15dp"
             android:layout_marginBottom="15dp"
             android:hint="Your question"
-            android:textColorHint="@color/textInfo"
+            android:textColorHint="@color/secondary"
             app:boxStrokeColor="@color/textInfo"
             app:layout_constraintStart_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="parent">
@@ -31,16 +31,28 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
-                android:textSize="17dp" />
+                android:textSize="20dp" />
         </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/txt_photo_profile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
+            android:paddingTop="15dp"
+            android:paddingBottom="15dp"
+            android:text="Now write all the possible answers and select the right one"
+            android:textColor="@color/textInfo"
+            android:textSize="20dp" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             android:layout_marginBottom="15dp"
-            android:hint="Wrong answers"
-            android:textColorHint="@color/textInfo"
+            android:hint="Answers"
+            android:textColorHint="@color/secondary"
             app:boxStrokeColor="@color/textInfo"
             app:layout_constraintTop_toBottomOf="parent">
 
@@ -49,7 +61,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
-                android:textSize="17dp" />
+                android:textSize="20dp" />
         </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -73,6 +85,8 @@
             android:layout_marginBottom="15dp"
             android:background="@color/secondary"
             android:text="+ Add wrong answer"
+            android:textAllCaps="false"
+            android:textSize="20dp"
             app:strokeColor="@color/secondary"
             app:strokeWidth="10dp" />
 
@@ -103,7 +117,7 @@
             android:id="@+id/btn_create_bond"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:backgroundTint="@android:color/transparent"
+            android:background="@drawable/authentication_button"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
             android:text="Share Bond"

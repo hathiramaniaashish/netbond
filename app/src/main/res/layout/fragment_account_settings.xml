@@ -14,16 +14,29 @@
         android:padding="21dp"
         app:layout_constraintTop_toTopOf="parent">
 
+        <Button
+            android:id="@+id/btn_change_profile"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/authentication_button"
+            android:text="Change"
+            android:textColor="@color/textInfo"
+            app:strokeColor="@color/secondary"
+            app:strokeWidth="10dp" />
+
         <TextView
             android:id="@+id/txt_photo_profile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             android:layout_marginBottom="15dp"
+            android:gravity="center"
             android:padding="15dp"
             android:text="Change Photo Profile"
             android:textColor="@color/textInfo"
-            android:textSize="17dp" />
+            android:textColorHint="@color/secondary"
+            android:textSize="20dp" />
 
         <!--TextView
             android:id="@+id/textView7"
@@ -32,22 +45,13 @@
             android:text="TextView"
             android:textColor="@color/textInfo" /-->
 
-        <Button
-            android:id="@+id/btn_change_profile"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:background="@android:color/transparent"
-            android:text="Change"
-            app:strokeColor="@color/secondary"
-            app:strokeWidth="10dp" />
-
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             android:layout_marginBottom="15dp"
             android:hint="Name"
-            android:textColorHint="@color/textInfo"
+            android:textColorHint="@color/secondary"
             app:boxStrokeColor="@color/textInfo"
             app:layout_constraintStart_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="parent">
@@ -57,7 +61,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
-                android:textSize="17dp" />
+                android:textSize="20dp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!--TextView
@@ -73,7 +77,7 @@
             android:layout_marginTop="15dp"
             android:layout_marginBottom="15dp"
             android:hint="Username"
-            android:textColorHint="@color/textInfo"
+            android:textColorHint="@color/secondary"
             app:boxStrokeColor="@color/textInfo"
             app:layout_constraintStart_toEndOf="@id/edit_name"
             app:layout_constraintTop_toBottomOf="parent">
@@ -83,7 +87,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
-                android:textSize="17dp" />
+                android:textSize="20dp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!--TextView
@@ -99,7 +103,7 @@
             android:layout_marginTop="15dp"
             android:layout_marginBottom="15dp"
             android:hint="Email"
-            android:textColorHint="@color/textInfo"
+            android:textColorHint="@color/secondary"
             app:boxStrokeColor="@color/textInfo"
             app:layout_constraintStart_toEndOf="@id/edit_username"
             app:layout_constraintTop_toBottomOf="parent">
@@ -109,7 +113,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
-                android:textSize="17dp" />
+                android:textSize="20dp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!--TextView
@@ -125,10 +129,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             android:layout_marginBottom="15dp"
-            android:padding="15dp"
+            android:paddingTop="15dp"
+            android:paddingBottom="15dp"
             android:text="Log Out"
             android:textColor="@color/warning"
-            android:textSize="17dp" />
+            android:textSize="20dp" />
 
     </LinearLayout>
 
@@ -143,7 +148,7 @@
             android:id="@+id/btn_save_settings"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:backgroundTint="@android:color/transparent"
+            android:background="@drawable/authentication_button"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
             android:text="Save"
