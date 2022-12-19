@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import com.bumptech.glide.Glide
 import com.example.netbond.databinding.AnswerTemplateBinding
 import com.example.netbond.databinding.BondTemplateBinding
@@ -23,17 +24,28 @@ class FeedFragment : Fragment() {
     private lateinit var binding: FragmentFeedBinding
     private val storageService = StorageService()
     private val utils = Utils()
-//    private val viewModel: UserViewModel by activityViewModels()
-    private var actualUsername: String = "johndoe"
+    private val viewModel: UserViewModel by activityViewModels()
+    private var actualUsername = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        setActualUsername()
         // Inflate the layout for this fragment
         binding = FragmentFeedBinding.inflate(inflater, container, false)
-        setFeed()
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(700)
+            setFeed()
+        }
         return binding.root
+    }
+
+    private fun setActualUsername() {
+        viewModel.user.observe(viewLifecycleOwner) {
+            actualUsername = it.username!!
+        }
     }
 
     private fun setFeed() {

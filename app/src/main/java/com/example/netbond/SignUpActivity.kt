@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.inputmethod.InputMethodManager
 import com.example.netbond.databinding.ActivitySignUpBinding
 import com.example.netbond.models.User
-import com.example.netbond.services.AuthService
 import com.example.netbond.services.StorageService
 import com.example.netbond.services.Utils
 import com.google.firebase.auth.FirebaseAuth
@@ -18,7 +17,6 @@ class SignUpActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySignUpBinding
     private val storageService = StorageService()
-    private val authService = AuthService()
     private val auth = FirebaseAuth.getInstance()
     private val utils = Utils()
 
@@ -56,11 +54,8 @@ class SignUpActivity : AppCompatActivity() {
                             val user = User(
                                 "https://firebasestorage.googleapis.com/v0/b/netbond-app.appspot.com/o/profiles%2Fdefault_avatar_img.jfif?alt=media&token=20fa02a9-bd7d-48af-9641-b35c9f86b735",
                                 name, username, 0, 0, 0, email)
+
                             storageService.addNewUser(user)
-                            val userEmail = authService.checkUserSignedIn()
-                            if (userEmail != null) {
-                                // Add user to ViewModel ...
-                            }
                             navigateToActivity(MainActivity())
                         } else {
                             utils.displayMessage(this@SignUpActivity, "Sign up failed")

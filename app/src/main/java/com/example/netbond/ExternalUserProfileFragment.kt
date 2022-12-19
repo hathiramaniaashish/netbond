@@ -27,7 +27,7 @@ class ExternalUserProfileFragment : Fragment(R.layout.fragment_external_user_pro
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setFragmentResultListener("requestKey") { requestKey, bundle ->
+        setFragmentResultListener("requestKey") { _, bundle ->
             // We use a String here, but any type that can be put in a Bundle is supported
             extUsername = bundle.getString("bundleKey")
             // Do something with the result
@@ -37,7 +37,7 @@ class ExternalUserProfileFragment : Fragment(R.layout.fragment_external_user_pro
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        userDocID = viewModel.userDocID!!
+        userDocID = viewModel.user.value?.userDocID
         // Load data viewed of external user
         loadExternalUserData()
         // Set button for follow/requested/unfollow

@@ -15,7 +15,6 @@ class StorageService {
     private val db = FirebaseFirestore.getInstance()
     private val collUsers = db.collection("users")
     private val collBonds = db.collection("bonds")
-    // private val auth = Firebase.auth
 
     suspend fun getUsernameByUserDocID(userDocID: String): String {
         var user = getUserByDocID(userDocID)
@@ -43,6 +42,18 @@ class StorageService {
 
         user?.userDocID = userDocID
         return user!!
+    }
+
+    suspend fun getUserByEmail(email: String): User {
+        val user = collUsers
+            .whereEqualTo("email", email)
+            .get()
+            .await()
+            .single()
+            .toObject<User>()
+
+        user.userDocID = getUserDocIDByUsername(user.username!!)
+        return user
     }
 
     suspend fun getUserByUsername(username: String): User {

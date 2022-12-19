@@ -34,7 +34,7 @@ class BondCreationFragment : Fragment(R.layout.fragment_bond_creation) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        userDocID = viewModel.userDocID!!
+        userDocID = viewModel.user!!.userDocID!!
         setFields()
     }
 
