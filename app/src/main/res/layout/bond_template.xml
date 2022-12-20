@@ -9,9 +9,11 @@
     android:layout_marginBottom="20dp"
     android:background="@drawable/bond_stroke"
     android:orientation="vertical"
-    android:paddingTop="20dp">
+    android:paddingTop="20dp"
+    android:paddingBottom="20dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/user_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 

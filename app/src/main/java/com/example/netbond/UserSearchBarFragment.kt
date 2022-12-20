@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.size
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
@@ -41,7 +42,7 @@ class UserSearchBarFragment : Fragment() {
         binding = FragmentUserSearchBarBinding.inflate(inflater, container, false)
         CoroutineScope(Dispatchers.Main).launch {
             setSearchBarListener()
-            if (binding.pendingRequests.visibility == View.VISIBLE) {
+            if (binding.pendingRequests.visibility == View.VISIBLE && binding.usersList.size == 0) {
                 setReceivedRequests()
             }
         }
@@ -88,8 +89,7 @@ class UserSearchBarFragment : Fragment() {
                     val username = "@" + user.username
                     bind.userName.text = username
                     Glide.with(this@UserSearchBarFragment).load(user.profile_image).into(bind.userImage)
-                    bind.root.setOnClickListener { view ->
-                        view.setBackgroundColor(resources.getColor(R.color.gray, null))
+                    bind.root.setOnClickListener {
                         setFragmentResult("requestKey", bundleOf("bundleKey" to user.username))
                         findNavController().navigate(R.id.externalUserProfileFragment)
                     }
@@ -103,6 +103,10 @@ class UserSearchBarFragment : Fragment() {
             val requests = storageService.getReceivedRequests(actualUsername)
             for (request in requests) {
                 val bind = AcceptUserTemplateBinding.inflate(layoutInflater, binding.usersList, true)
+                bind.root.setOnClickListener {
+                    setFragmentResult("requestKey", bundleOf("bundleKey" to request.username))
+                    findNavController().navigate(R.id.externalUserProfileFragment)
+                }
                 bind.nameUser.text = request.name
                 val username = "@" + request.username
                 bind.userName.text = username
