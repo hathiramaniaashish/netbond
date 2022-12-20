@@ -25,7 +25,6 @@ class AccountSettingFragment : Fragment(R.layout.fragment_account_settings) {
     private val authService = AuthService()
     private val PICK_IMAGE_REQUEST = 71
     private var filePath: Uri? = null
-    private val fStore = FirebaseStorage.getInstance()
     private val fStoreRef = FirebaseStorage.getInstance().reference
     private val viewModel: UserViewModel by activityViewModels()
     var userDocID:String? = null
@@ -36,7 +35,8 @@ class AccountSettingFragment : Fragment(R.layout.fragment_account_settings) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        userDocID = viewModel.user.value?.userDocID
+//        userDocID = viewModel.user.value?.userDocID
+        setUserDocID()
         getUserData()
         setImageUploader()
 
@@ -49,6 +49,12 @@ class AccountSettingFragment : Fragment(R.layout.fragment_account_settings) {
 
         val btnSaveSettings = requireView().findViewById<Button>(R.id.btn_save_settings)
         btnSaveSettings.setOnClickListener { updateUserData() }
+    }
+
+    private fun setUserDocID() {
+        viewModel.user.observe(viewLifecycleOwner) {
+            userDocID = it.userDocID!!
+        }
     }
 
     private fun getUserData() {

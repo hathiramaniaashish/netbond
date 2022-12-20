@@ -33,9 +33,15 @@ class BondCreationFragment : Fragment(R.layout.fragment_bond_creation) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        userDocID = viewModel.user!!.userDocID!!
+        setUserDocID()
+//        userDocID = viewModel.user!!.userDocID!!
         setFields()
+    }
+
+    private fun setUserDocID() {
+        viewModel.user.observe(viewLifecycleOwner) {
+            userDocID = it.userDocID!!
+        }
     }
 
     fun setFields() {

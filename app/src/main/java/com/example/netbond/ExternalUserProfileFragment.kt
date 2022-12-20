@@ -37,7 +37,7 @@ class ExternalUserProfileFragment : Fragment(R.layout.fragment_external_user_pro
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        userDocID = viewModel.user.value?.userDocID
+        setUserDocID()
         // Load data viewed of external user
         loadExternalUserData()
         // Set button for follow/requested/unfollow
@@ -45,7 +45,13 @@ class ExternalUserProfileFragment : Fragment(R.layout.fragment_external_user_pro
         val btnFollow = view?.findViewById<Button>(R.id.btn_follow)
         setFollowStatus()
         btnFollow!!.setOnClickListener {
-            setFollowStatus()
+            updateFollowStatus()
+        }
+    }
+
+    private fun setUserDocID() {
+        viewModel.user.observe(viewLifecycleOwner) {
+            userDocID = it.userDocID!!
         }
     }
 
@@ -69,23 +75,37 @@ class ExternalUserProfileFragment : Fragment(R.layout.fragment_external_user_pro
         }
     }
 
-    fun setFollowStatus(update: Boolean) {
+    fun setFollowStatus() {
         val btnFollow = requireView().findViewById<Button>(R.id.btn_follow)
         CoroutineScope(Dispatchers.Main).launch {
             var thisUser = db.getUserByDocID(userDocID!!)
             var extUserDocID = db.getUserDocIDByUsername(extUsername!!)
             var extUser = db.getUserByDocID(extUserDocID)
-            if (followController.ifThisRequestedToFollowExt(thisUser, extUser) or (update)) {
+            if (followController.ifThisRequestedToFollowExt(thisUser, extUser)) {
                 btnFollow!!.text = "Pending"
-                followController.thisUnrequestsToFollowExt(thisUser, extUser)
-            } else if (followController.ifThisFollowsExt(thisUser, extUser) or (update)) {
+            } else if (followController.ifThisFollowsExt(thisUser, extUser)) {
                 btnFollow!!.text = "Unfollow"
-                followController.thisUnfollowsExt(thisUser, extUser)
-            } else if (update) {
-                btnFollow!!.text = "Following"
-                followController.thisRequestsToFollowExt(thisUser, extUser)
             } else {
                 btnFollow!!.text = "Follow"
+            }
+        }
+    }
+
+    fun updateFollowStatus() {
+        val btnFollow = requireView().findViewById<Button>(R.id.btn_follow)
+        CoroutineScope(Dispatchers.Main).launch {
+            var thisUser = db.getUserByDocID(userDocID!!)
+            var extUserDocID = db.getUserDocIDByUsername(extUsername!!)
+            var extUser = db.getUserByDocID(extUserDocID)
+            if (followController.ifThisRequestedToFollowExt(thisUser, extUser)) {
+                btnFollow!!.text = "Follow"
+                followController.thisUnrequestsToFollowExt(thisUser, extUser)
+            } else if (followController.ifThisFollowsExt(thisUser, extUser)) {
+                btnFollow!!.text = "Follow"
+                followController.thisUnfollowsExt(thisUser, extUser)
+            } else {
+                btnFollow!!.text = "Pending"
+                followController.thisRequestsToFollowExt(thisUser, extUser)
             }
         }
     }

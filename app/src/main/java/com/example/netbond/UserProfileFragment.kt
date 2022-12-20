@@ -16,12 +16,11 @@ import com.example.netbond.models.UserViewModel
 import com.example.netbond.services.StorageService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class UserProfileFragment : Fragment(R.layout.fragment_user_profile) {
 
-    val db = StorageService()
+    private val db = StorageService()
     private val viewModel: UserViewModel by activityViewModels()
     private lateinit var binding: FragmentUserProfileBinding
     var userDocID:String? = null
@@ -39,7 +38,8 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        userDocID = viewModel.user.value?.userDocID
+//        userDocID = viewModel.user.value?.userDocID
+        setUserDocID()
         getUserData()
         setBondsView()
 
@@ -47,6 +47,12 @@ class UserProfileFragment : Fragment(R.layout.fragment_user_profile) {
         buttonClick.setOnClickListener {
             // Action
             findNavController().navigate(R.id.accountSettingFragment)
+        }
+    }
+
+    private fun setUserDocID() {
+        viewModel.user.observe(viewLifecycleOwner) {
+            userDocID = it.userDocID!!
         }
     }
 
