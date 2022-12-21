@@ -192,8 +192,8 @@ class StorageService {
     suspend fun existsEmail(email: String): Boolean {
         val users = collUsers.get().await()
         users.forEach { user ->
-            val email = user.get("email").toString()
-            if (email == email) return true
+            val oldEmail = user.get("email").toString()
+            if (oldEmail == email) return true
         }
         return false
     }
