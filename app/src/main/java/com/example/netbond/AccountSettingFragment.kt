@@ -1,14 +1,21 @@
 package com.example.netbond
 
+import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.provider.OpenableColumns
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
+import com.bumptech.glide.Glide
 import com.example.netbond.models.UserViewModel
 import com.example.netbond.services.AuthService
 import com.example.netbond.services.StorageService
@@ -104,52 +111,14 @@ class AccountSettingFragment : Fragment(R.layout.fragment_account_settings) {
 
         btnChangeProfile.setOnClickListener {
             launchGallery()
-            CoroutineScope(Dispatchers.Main).launch {
-                val newImageUrl = uploadImage()
-                setNewImage(newImageUrl)
-            }
         }
     }
 
     private fun launchGallery() {
         val intent = Intent()
         intent.type = "image/*"
-        intent.action = Intent.ACTION_GET_CONTENT
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST)
-    }
-
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK) {
-            if(data == null || data.data == null){
-                println("SALIÓ MAAAL 1")
-                return
-            }
-
-            filePath = data.data
-        }
-    }
-
-    private suspend fun uploadImage():String?{
-//        val progressDialog: ProgressDialog = ProgressDialog(this.context)
-//        progressDialog.setTitle("Uploading")
-//        progressDialog.show()
-        if (filePath != null){
-            val ref = fStoreRef?.child("profiles/" + UUID.randomUUID().toString())
-            val uploadTask = ref?.putFile(filePath!!)
-            val newImageURL = uploadTask
-                ?.await()
-                ?.storage
-                ?.downloadUrl
-                ?.await()
-                .toString()
-            return newImageURL
-
-        } else {
-            println("Something went wrong while uploading")
-        }
-        return null
+        intent.action = Intent.ACTION_PICK
+        imagePickerActivityResult.launch(intent)
     }
 
     private fun setNewImage(newURI:String?) {
@@ -161,5 +130,54 @@ class AccountSettingFragment : Fragment(R.layout.fragment_account_settings) {
             }
         }
     }
+
+    private var imagePickerActivityResult: ActivityResultLauncher<Intent> =
+    // lambda expression to receive a result back, here we
+        // receive single item(photo) on selection
+        registerForActivityResult( ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result != null) {
+                // getting URI of selected Image
+                val imageUri: Uri? = result.data?.data
+
+                // val fileName = imageUri?.pathSegments?.last()
+
+                // extract the file name with extension
+                val sd = getFileName(this.requireContext(), imageUri!!)
+
+                // Upload Task with upload to directory 'file'
+                // and name of the file remains same
+                val uploadTask = fStoreRef.child("profiles/$sd").putFile(imageUri)
+
+                // On success, download the file URL and display it
+                uploadTask.addOnSuccessListener {
+                    // using glide library to display the image
+                    fStoreRef.child("profiles/$sd").downloadUrl.addOnSuccessListener {
+                        setNewImage(it.toString())
+
+                        Log.e("Firebase", "download passed")
+                    }.addOnFailureListener {
+                        Log.e("Firebase", "Failed in downloading")
+                    }
+                }.addOnFailureListener {
+                    Log.e("Firebase", "Image Upload fail")
+                }
+            }
+        }
+
+    @SuppressLint("Range")
+    private fun getFileName(context: Context, uri: Uri): String? {
+        if (uri.scheme == "content") {
+            val cursor = context.contentResolver.query(uri, null, null, null, null)
+            cursor.use {
+                if (cursor != null) {
+                    if(cursor.moveToFirst()) {
+                        return cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+                    }
+                }
+            }
+        }
+        return uri.path?.lastIndexOf('/')?.let { uri.path?.substring(it) }
+    }
+
 
 }
