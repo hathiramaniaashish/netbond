@@ -40,7 +40,7 @@ class FeedFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentFeedBinding.inflate(inflater, container, false)
         CoroutineScope(Dispatchers.Main).launch {
-            delay(800)
+            delay(1000)
             setFeed()
         }
         return binding.root
