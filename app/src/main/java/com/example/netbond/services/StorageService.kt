@@ -77,8 +77,6 @@ class StorageService {
                     "profile_image" to user!!.profile_image,
                     "name" to user!!.name,
                     "username" to user!!.username,
-                    "n_followings" to user!!.n_followings!!,
-                    "n_followers" to user!!.n_followers!!,
                     "n_points" to user!!.n_points!!,
                     "email" to user!!.email
                 )

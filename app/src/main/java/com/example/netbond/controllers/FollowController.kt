@@ -25,10 +25,12 @@ class FollowController {
 //            db.incrementFollowers(extUser!!.username!!, -2)
 //            db.incrementFollowings(thisUser!!.username!!, -2)
 //            db.incrementPoints(thisUser!!.username!!, -2)
-            thisUser!!.n_followers!!.dec()
-            extUser!!.n_followers!!.dec()
-            db.updateUser(thisUser)
-            db.updateUser(extUser)
+//            println(thisUser!!.n_followers!!)
+//            thisUser!!.n_followers!!.dec()
+//            println(thisUser!!.n_followers!!)
+//            extUser!!.n_followers!!.dec()
+            db.incrementFollowings(thisUser!!.username!!, -1)
+            db.incrementFollowers(extUser!!.username!!, -1)
         }
     }
 
