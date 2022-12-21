@@ -129,9 +129,9 @@ class StorageService {
     }
 
     fun removeFollow(thisUser: User?, extUser: User?, isFromThisUser: Boolean) {
-        val coll = "followers"
+        var coll = "followers"
         if (isFromThisUser) {
-            val coll = "followings"
+            coll = "followings"
         }
         collUsers
             .document(thisUser!!.userDocID!!)
@@ -187,6 +187,15 @@ class StorageService {
         users.forEach { user ->
             val actualUsername = user.get("username").toString()
             if (actualUsername == username) return true
+        }
+        return false
+    }
+
+    suspend fun existsEmail(email: String): Boolean {
+        val users = collUsers.get().await()
+        users.forEach { user ->
+            val email = user.get("email").toString()
+            if (email == email) return true
         }
         return false
     }

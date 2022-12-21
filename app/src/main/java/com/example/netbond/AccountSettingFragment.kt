@@ -10,15 +10,23 @@ import android.provider.OpenableColumns
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
+import com.example.netbond.databinding.ActivityLoginBinding
+import com.example.netbond.databinding.FragmentAccountSettingsBinding
 import com.example.netbond.models.UserViewModel
 import com.example.netbond.services.AuthService
 import com.example.netbond.services.StorageService
+import com.example.netbond.services.Utils
+import com.google.android.material.internal.ViewUtils.hideKeyboard
 import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -30,11 +38,13 @@ class AccountSettingFragment : Fragment(R.layout.fragment_account_settings) {
 
     private val db = StorageService()
     private val authService = AuthService()
+    private val utils = Utils()
     private val PICK_IMAGE_REQUEST = 71
     private var filePath: Uri? = null
     private val fStoreRef = FirebaseStorage.getInstance().reference
     private val viewModel: UserViewModel by activityViewModels()
     var userDocID:String? = null
+//    private lateinit var binding: FragmentAccountSettingsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +52,7 @@ class AccountSettingFragment : Fragment(R.layout.fragment_account_settings) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-//        userDocID = viewModel.user.value?.userDocID
+//        binding.root.setOnClickListener { hideKeyboard() }
         setUserDocID()
         getUserData()
         setImageUploader()
@@ -57,6 +67,12 @@ class AccountSettingFragment : Fragment(R.layout.fragment_account_settings) {
         val btnSaveSettings = requireView().findViewById<Button>(R.id.btn_save_settings)
         btnSaveSettings.setOnClickListener { updateUserData() }
     }
+
+//    private fun hideKeyboard() {
+//        val imm = getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager
+//        imm.hideSoftInputFromWindow(binding.root.windowToken, 0)
+//        currentFocus?.clearFocus()
+//    }
 
     private fun setUserDocID() {
         viewModel.user.observe(viewLifecycleOwner) {
@@ -94,12 +110,19 @@ class AccountSettingFragment : Fragment(R.layout.fragment_account_settings) {
 
         CoroutineScope(Dispatchers.Main).launch{
             var user = db.getUserByDocID(userDocID!!)
-            if (user != null) {
-                user.name = editName?.text.toString()
-                user.username = editUsername?.text.toString()
-                user.email = editEmail?.text.toString()
+            if (db.existsUser(editUsername!!.text.toString()) and (editUsername!!.text.toString() != user.username)) {
+                utils.displayMessage(this@AccountSettingFragment.requireContext(), "Username already exists!")
+            } else if (db.existsEmail(editEmail!!.text.toString()) and (editEmail!!.text.toString() != user.email)) {
+                utils.displayMessage(this@AccountSettingFragment.requireContext(), "Email already exists!")
+            } else  {
+                if (user != null) {
+                    user.name = editName?.text.toString()
+                    user.username = editUsername?.text.toString()
+                    user.email = editEmail?.text.toString()
+                }
+                db.updateUser(user)
+                findNavController().navigate(R.id.userProfileFragment)
             }
-            db.updateUser(user)
         }
 
     }

@@ -97,12 +97,12 @@ class ExternalUserProfileFragment : Fragment(R.layout.fragment_external_user_pro
             var thisUser = db.getUserByDocID(userDocID!!)
             var extUserDocID = db.getUserDocIDByUsername(extUsername!!)
             var extUser = db.getUserByDocID(extUserDocID)
-            if (followController.ifThisRequestedToFollowExt(thisUser, extUser)) {
-                btnFollow!!.text = "Follow"
-                followController.thisUnrequestsToFollowExt(thisUser, extUser)
-            } else if (followController.ifThisFollowsExt(thisUser, extUser)) {
+            if (followController.ifThisFollowsExt(thisUser, extUser)) {
                 btnFollow!!.text = "Follow"
                 followController.thisUnfollowsExt(thisUser, extUser)
+            } else if (followController.ifThisRequestedToFollowExt(thisUser, extUser)) {
+                btnFollow!!.text = "Follow"
+                followController.thisUnrequestsToFollowExt(thisUser, extUser)
             } else {
                 btnFollow!!.text = "Pending"
                 followController.thisRequestsToFollowExt(thisUser, extUser)
