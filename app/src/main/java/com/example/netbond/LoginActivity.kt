@@ -17,6 +17,7 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.statusBarColor = getColor(R.color.background)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         binding.root.setOnClickListener { hideKeyboard() }
         binding.loginMessage2.setOnClickListener { navigateToActivity(SignUpActivity()) }

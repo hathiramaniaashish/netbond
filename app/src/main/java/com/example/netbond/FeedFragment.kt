@@ -5,7 +5,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
+import androidx.core.view.size
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResult
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.netbond.databinding.AnswerTemplateBinding
 import com.example.netbond.databinding.BondTemplateBinding
@@ -36,7 +40,7 @@ class FeedFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentFeedBinding.inflate(inflater, container, false)
         CoroutineScope(Dispatchers.Main).launch {
-            delay(1000)
+            delay(800)
             setFeed()
         }
         return binding.root
@@ -59,6 +63,10 @@ class FeedFragment : Fragment() {
                         hasBonds = true
                         val bond = storageService.getBondByID(bondID)
                         val bindBond = BondTemplateBinding.inflate(layoutInflater, binding.bonds, true)
+                        bindBond.userInfo.setOnClickListener {
+                            setFragmentResult("requestKey", bundleOf("bundleKey" to following.username))
+                            findNavController().navigate(R.id.externalUserProfileFragment)
+                        }
                         Glide.with(this@FeedFragment).load(following.profile_image).into(bindBond.userImage)
                         val username = "@" + following.username
                         bindBond.username.text = username
@@ -99,6 +107,10 @@ class FeedFragment : Fragment() {
 
             // Refresh Feed
             binding.bonds.removeView(bind.root)
+
+            if (binding.bonds.size == 0) {
+                binding.message.visibility = View.VISIBLE
+            }
         }
     }
 
