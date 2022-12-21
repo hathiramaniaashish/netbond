@@ -42,7 +42,7 @@ class UserSearchBarFragment : Fragment() {
         binding = FragmentUserSearchBarBinding.inflate(inflater, container, false)
         CoroutineScope(Dispatchers.Main).launch {
             setSearchBarListener()
-            if (binding.pendingRequests.visibility == View.VISIBLE && binding.usersList.size == 0) {
+            if ((binding.pendingRequests.visibility == View.VISIBLE) && (binding.usersList.size == 0)) {
                 setReceivedRequests()
             }
         }
@@ -89,9 +89,16 @@ class UserSearchBarFragment : Fragment() {
                     val username = "@" + user.username
                     bind.userName.text = username
                     Glide.with(this@UserSearchBarFragment).load(user.profile_image).into(bind.userImage)
-                    bind.root.setOnClickListener {
-                        setFragmentResult("requestKey", bundleOf("bundleKey" to user.username))
-                        findNavController().navigate(R.id.externalUserProfileFragment)
+                    if (actualUsername != user.username) {
+                        bind.root.setOnClickListener {
+                            setFragmentResult("requestKey", bundleOf("bundleKey" to user.username))
+                            findNavController().navigate(R.id.externalUserProfileFragment)
+                        }
+                    // Actual user clicks on his own user
+                    } else {
+                        bind.root.setOnClickListener {
+                            findNavController().navigate(R.id.userProfileFragment)
+                        }
                     }
                 }
             }
