@@ -143,11 +143,6 @@ class StorageService {
                 .add(bond)
                 .await()
                 .id
-            collBonds
-                .document(bondId)
-                .collection("interactions")
-                .document("initial")
-                .set({})
             collUsers
                 .document(userDocID)
                 .collection("bonds")
